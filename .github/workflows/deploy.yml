@@ -26,27 +26,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
-      - name: Install dependencies
-        working-directory: ./client
-        run: npm ci
-
-      - name: Build frontend
-        working-directory: ./client
-        env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
-        run: npm run build
-
       - name: Deploy to Vercel
         working-directory: ./client
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          npx vercel build --prod --token=$VERCEL_TOKEN
-          npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+        run: npx vercel deploy --prod --token=$VERCEL_TOKEN --yes
 
   # Deploy backend to Render
   deploy-backend:
