@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-// In development, the Vite proxy in `vite.config.js` will forward requests from /api to the backend.
-// In production (on Netlify), the redirect rule in `netlify.toml` will do the same.
-// Therefore, we can use a relative baseURL.
-const baseURL = '/api';
+// Use environment variable for API URL, fallback to /api for dev (Vite proxy handles it)
+// In production, VITE_API_BASE_URL should be set to your backend URL (e.g., https://your-backend.onrender.com)
+const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Helper function to get the Clerk token. This assumes Clerk is initialized.
 export const getAuthToken = async () => {

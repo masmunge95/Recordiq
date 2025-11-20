@@ -41,6 +41,7 @@ pnpm-debug.log*
 .cache/
 .temp/
 tmp/
+product keys/
 
 # Android (Capacitor/Gradle)
 client/android/
@@ -70,3 +71,8 @@ server/uploads/**/*
 !server/uploads/.gitkeep
 !server/uploads/invoices/.gitkeep
 !server/uploads/records/.gitkeep
+
+# Personal instructional files
+GIT-SETUP.md 
+ENV-CONFIG.md
+DEPLOYMENT.md

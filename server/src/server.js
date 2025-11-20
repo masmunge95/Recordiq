@@ -10,10 +10,17 @@ dotenv.config();
 // --- CORS Configuration ---
 const allowedOrigins = [
   'http://localhost:5173', // Vite dev server
+  'http://localhost:4173', // Vite preview
+  'capacitor://localhost', // Capacitor Android/iOS
+  'http://localhost',      // Capacitor Android
 ];
+
+// Add production URLs from environment variable
 if (process.env.CORS_ALLOWED_ORIGINS) {
   allowedOrigins.push(...process.env.CORS_ALLOWED_ORIGINS.split(','));
 }
+
+console.log('Allowed CORS origins:', allowedOrigins);
 
 const corsOptions = {
   origin: (origin, callback) => {
