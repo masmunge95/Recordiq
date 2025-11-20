@@ -1,0 +1,21 @@
+INTASEND
+
+LIVE
+Publishable Key=ISPubKey_live_db3b7dc3-eaad-4f2f-8088-c583f185e056
+Secret Key=ISSecretKey_live_e1953452-445a-4ffa-a5db-a62c0f5e8963
+
+TEST
+Publishable Key=ISPubKey_test_abc0a9e2-1ab1-44be-aea0-07e78ceffe91
+Secret Key=ISSecretKey_test_f3652ed9-334e-4966-ad81-511752e652f4
+
+AZURE
+
+COMPUTER VISION
+ENDPOINT=https://recordiq-computer-vision.cognitiveservices.azure.com/
+KEY1=ChYy883LPRmvJD0GLJWk8fFLQgHNZowDqJ6NBPBWZlN5FzK97sv7JQQJ99BKACYeBjFXJ3w3AAAFACOGO2Xw
+KEY2=GIYlJbYuolmnQ28yY4e75aAs56J97WzYbdiPZ7BUs7jSnbog4QnVJQQJ99BKACYeBjFXJ3w3AAAFACOGxKrJ
+
+DOCUMENT INTELLIGENCE(FORM RECOGNIZER
+ENDPOINT=https://recordiq-document-intelligence.cognitiveservices.azure.com/
+KEY1=Fnh507mxF3T9OxeAFrIzYesvtsnTS2DXXD3tBLs4jt4R2nC5lSutJQQJ99BKACYeBjFXJ3w3AAALACOG8SNM
+KEY2=GKHx8rfyMeI3RoGfCbhtPjbMH3DAEVyy5sdYHj8tQUeK92krMg1FJQQJ99BKACYeBjFXJ3w3AAALACOGuMC9
