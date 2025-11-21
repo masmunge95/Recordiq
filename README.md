@@ -816,8 +816,8 @@ npm run test:integration  # Run integration tests
 
 ```bash
 # Clone
-git clone https://github.com/yourusername/recordiq.git
-cd recordiq
+git clone https://github.com/masmunge95/Recordiq.git
+cd Recordiq
 
 # Setup
 cd client && npm install && cd ..
@@ -879,15 +879,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Team
 
-- **Developer**: [Your Name]
+- **Developer**: Samuel Munge Waema
 - **Project**: Recordiq - Invoice Management & OCR Platform
 - **Started**: 2025
 
 ## 📞 Support
 
-- Email: support@recordiq.local
-- Issues: [GitHub Issues Link]
-- Discussions: [GitHub Discussions Link]
+- Email: waemasamuel95@gmail.com
 
 ---
 
