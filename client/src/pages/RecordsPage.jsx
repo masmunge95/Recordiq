@@ -183,7 +183,7 @@ const RecordsPage = () => {
   }
 
   return (
-    <div className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto min-h-screen`}>
+    <div className={`px-0 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto min-h-screen`}>
       {/* Header Section */}
       <div className={`mb-8 p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">

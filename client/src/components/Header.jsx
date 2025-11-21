@@ -59,9 +59,9 @@ export default function Header() {
             : 'bg-white/80 border-red-100'
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg sm:text-xl text-red-600 hover:opacity-80 transition-opacity flex-shrink-0">
-            <img src="/recordiq.svg" alt="Recordiq" className="h-7 sm:h-8 w-auto" />
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between h-14 sm:h-16">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 font-bold text-base sm:text-lg md:text-xl text-red-600 hover:opacity-80 transition-opacity flex-shrink-0">
+            <img src="/recordiq.svg" alt="Recordiq" className="h-6 sm:h-7 md:h-8 w-auto" />
             <span className="hidden sm:inline">Recordiq</span>
           </Link>
           <div className="hidden md:flex items-center gap-4">

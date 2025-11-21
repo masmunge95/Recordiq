@@ -102,7 +102,7 @@ const CustomerDashboardPage = () => {
   const cardBg = theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Welcome Banner */}
       <div className={`mb-8 p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
         <h1 className={`text-4xl font-bold ${textColor} mb-2`}>

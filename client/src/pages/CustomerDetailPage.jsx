@@ -99,7 +99,7 @@ const CustomerDetailPage = () => {
   );
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Back Navigation */}
       <div className="mb-6">
         <Link to="/customers" className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:underline dark:text-blue-400">

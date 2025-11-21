@@ -7,12 +7,12 @@ import { useTheme } from '../context/ThemeContext';
 const FeatureCard = ({ icon, title, description }) => {
   const { theme } = useTheme();
   return (
-    <div className={`w-full md:w-1/3 lg:max-w-sm rounded-xl shadow-lg p-6 flex flex-col items-center text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-      <div className={`p-3 rounded-full mb-4 ${theme === 'dark' ? 'bg-red-900/40' : 'bg-red-100'}`}>
+    <div className={`w-full md:w-1/3 lg:max-w-sm rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-5 md:p-6 flex flex-col items-center text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+      <div className={`p-2 sm:p-3 rounded-full mb-3 sm:mb-4 ${theme === 'dark' ? 'bg-red-900/40' : 'bg-red-100'}`}>
         {icon}
       </div>
-      <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
-      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
+      <h3 className={`text-lg sm:text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
+      <p className={`text-sm sm:text-base ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
     </div>
   );
 };
@@ -71,13 +71,13 @@ export default function HomePage({ setScrollTarget }) {
       <SignedOut>
         <div>
           {/* Hero Section */}
-          <section ref={setScrollTarget} className="text-center py-16">
-            <h1 className={`text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl max-w-4xl mx-auto mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          <section ref={setScrollTarget} className="text-center py-8 sm:py-12 md:py-16">
+            <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto mb-4 sm:mb-6 leading-tight ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Welcome to <span className={`${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
                 Recordiq!
               </span>
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-lg mb-8">
+            <p className="mt-4 sm:mt-6 max-w-2xl mx-auto text-sm sm:text-base md:text-lg mb-6 sm:mb-8 px-4">
               Your complete invoice and payment management solution.<br />
               Create invoices, scan receipts with OCR, track payments, and manage customers—all in one platform.
             </p>

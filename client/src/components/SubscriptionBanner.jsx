@@ -35,7 +35,7 @@ const SubscriptionBanner = () => {
 
   return (
     <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 border-b border-yellow-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">

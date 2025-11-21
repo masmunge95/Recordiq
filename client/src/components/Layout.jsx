@@ -23,7 +23,7 @@ export default function Layout({ children }) {
         >
             <Header />
             <SubscriptionBanner />
-            <main className="flex-grow container mx-auto px-4 py-8 mt-16 scroll-mt-20">
+            <main className="flex-grow container mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6 lg:py-8 mt-14 sm:mt-16 scroll-mt-20">
                 {children}
             </main>
             <Footer />

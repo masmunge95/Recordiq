@@ -4,6 +4,9 @@ import { useTheme } from '../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 import db from '../db';
+import { getInvoices } from '../services/invoiceService';
+import { getCustomers } from '../services/customerService';
+import { sanitizeArrayForDb } from '../services/dbUtils';
 
 const SellerDashboardPage = () => {
   const { user } = useUser();
@@ -21,56 +24,95 @@ const SellerDashboardPage = () => {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // Fetch all invoices for this seller
-        const allInvoices = await db.invoices.toArray();
-        
-        // Calculate stats
-        const totalInvoices = allInvoices.length;
-        const sentInvoices = allInvoices.filter(inv => inv.status === 'sent').length;
-        const paidInvoices = allInvoices.filter(inv => inv.status === 'paid').length;
-        const totalRevenue = allInvoices
-          .filter(inv => inv.status === 'paid')
-          .reduce((sum, inv) => sum + (inv.total || 0), 0);
-
-        setStats({
-          totalInvoices,
-          sentInvoices,
-          paidInvoices,
-          totalRevenue,
-        });
-
-        // Get recent invoices (last 5)
-        const recent = allInvoices
-          .sort((a, b) => new Date(b.issueDate || 0) - new Date(a.issueDate || 0))
-          .slice(0, 5);
-        setRecentInvoices(recent);
-
-        // Get top customers by invoice count
-        const customerMap = {};
-        allInvoices.forEach(inv => {
-          const customerId = inv.customerId || inv.customer;
-          if (!customerMap[customerId]) {
-            customerMap[customerId] = {
-              customerId,
-              customerName: inv.customerName || 'Unknown',
-              count: 0,
-              totalAmount: 0,
-            };
-          }
-          customerMap[customerId].count += 1;
-          customerMap[customerId].totalAmount += inv.total || 0;
-        });
-
-        const topCustomersList = Object.values(customerMap)
-          .sort((a, b) => b.totalAmount - a.totalAmount)
-          .slice(0, 5);
-
-        setTopCustomers(topCustomersList);
+        // 1. Load cached data first for instant UI
+        const cachedInvoices = await db.invoices.toArray();
+        updateDashboardStats(cachedInvoices);
         setLoading(false);
+        
+        // 2. Fetch fresh data from API in background
+        try {
+          const apiResponse = await getInvoices();
+          const serverInvoices = apiResponse.invoices || apiResponse || [];
+          
+          if (Array.isArray(serverInvoices) && serverInvoices.length > 0) {
+            // Update cache
+            const sanitized = sanitizeArrayForDb(serverInvoices);
+            for (const invoice of sanitized) {
+              try {
+                const existing = await db.invoices.where('_id').equals(String(invoice._id)).first();
+                if (existing && existing.id !== undefined) {
+                  await db.invoices.update(existing.id, invoice);
+                } else {
+                  try {
+                    await db.invoices.add(invoice);
+                  } catch (addErr) {
+                    if (addErr.name === 'ConstraintError') {
+                      const fallback = await db.invoices.where('_id').equals(String(invoice._id)).first();
+                      if (fallback && fallback.id !== undefined) await db.invoices.update(fallback.id, invoice);
+                    }
+                  }
+                }
+              } catch (err) {
+                console.warn('Failed to sync invoice:', err);
+              }
+            }
+            
+            // Refresh dashboard with updated data
+            const updatedInvoices = await db.invoices.toArray();
+            updateDashboardStats(updatedInvoices);
+          }
+        } catch (apiError) {
+          console.log('API fetch failed, using cached data:', apiError);
+        }
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
         setLoading(false);
       }
+    };
+
+    const updateDashboardStats = (allInvoices) => {
+      // Calculate stats
+      const totalInvoices = allInvoices.length;
+      const sentInvoices = allInvoices.filter(inv => inv.status === 'sent').length;
+      const paidInvoices = allInvoices.filter(inv => inv.status === 'paid').length;
+      const totalRevenue = allInvoices
+        .filter(inv => inv.status === 'paid')
+        .reduce((sum, inv) => sum + (inv.total || 0), 0);
+
+      setStats({
+        totalInvoices,
+        sentInvoices,
+        paidInvoices,
+        totalRevenue,
+      });
+
+      // Get recent invoices (last 5)
+      const recent = allInvoices
+        .sort((a, b) => new Date(b.issueDate || 0) - new Date(a.issueDate || 0))
+        .slice(0, 5);
+      setRecentInvoices(recent);
+
+      // Get top customers by invoice count
+      const customerMap = {};
+      allInvoices.forEach(inv => {
+        const customerId = inv.customerId || inv.customer;
+        if (!customerMap[customerId]) {
+          customerMap[customerId] = {
+            customerId,
+            customerName: inv.customerName || 'Unknown',
+            count: 0,
+            totalAmount: 0,
+          };
+        }
+        customerMap[customerId].count += 1;
+        customerMap[customerId].totalAmount += inv.total || 0;
+      });
+
+      const topCustomersList = Object.values(customerMap)
+        .sort((a, b) => b.totalAmount - a.totalAmount)
+        .slice(0, 5);
+
+      setTopCustomers(topCustomersList);
     };
 
     loadDashboardData();
@@ -105,7 +147,7 @@ const SellerDashboardPage = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="px-3 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Welcome Banner */}
       <div className={`mb-8 p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
         <h1 className={`text-4xl font-bold ${textColor} mb-2`}>

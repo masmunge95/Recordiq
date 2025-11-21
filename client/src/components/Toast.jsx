@@ -67,8 +67,8 @@ const Toast = ({ message, type = 'info', onClose, duration = 4000 }) => {
     const style = typeStyles[type] || typeStyles.info;
 
     return (
-        <div className="fixed top-4 right-4 z-50 animate-slideInRight">
-            <div className={`flex items-start gap-3 p-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm min-w-[320px] max-w-md ${
+        <div className="fixed top-4 right-4 left-4 sm:left-auto z-50 animate-slideInRight">
+            <div className={`flex items-start gap-3 p-3 sm:p-4 rounded-xl shadow-2xl border-2 backdrop-blur-sm w-full sm:min-w-[320px] sm:max-w-md ${
                 theme === 'dark' 
                     ? `${style.bgDark} ${style.textDark}` 
                     : `${style.bgLight} ${style.textLight}`

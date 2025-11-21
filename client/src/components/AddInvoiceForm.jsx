@@ -178,7 +178,7 @@ const AddInvoiceForm = ({ onSaveInvoice, onCancel, invoiceToEdit }) => {
         {/* Desktop Layout */}
         <div className="hidden md:block space-y-2">
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-12 gap-2 items-center">
+            <div key={index} className="grid grid-cols-12 gap-2 items-center overflow-x-auto">
               <input
                 type="text"
                 placeholder="Description"
