@@ -27,12 +27,11 @@ jobs:
           cache-dependency-path: client/package-lock.json
 
       - name: Deploy to Vercel
-        working-directory: ./client
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: npx vercel deploy --prod --token=$VERCEL_TOKEN --yes
+        run: npx vercel deploy ./client --prod --token=$VERCEL_TOKEN --yes
 
   # Deploy backend to Render
   deploy-backend:
