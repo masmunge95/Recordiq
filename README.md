@@ -624,7 +624,7 @@ GET    /api/ocr/extract               # Extract text from image
 [Screenshot: Mobile navigation menu]
 📱 Responsive mobile menu with:
 - Hamburger navigation
-- Sign-in button for guests
+- Sign-in buttons for guests
 - Dark/light theme toggle
 - Navigation links
 ```
