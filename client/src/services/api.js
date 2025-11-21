@@ -5,21 +5,30 @@ import axios from 'axios';
 const getBaseURL = () => {
   // If explicitly set, use it (for manual override)
   if (import.meta.env.VITE_API_BASE_URL) {
+    console.log('[API] Using override URL:', import.meta.env.VITE_API_BASE_URL);
     return import.meta.env.VITE_API_BASE_URL;
   }
   
   // Auto-select based on build mode
   if (import.meta.env.MODE === 'production') {
-    return import.meta.env.VITE_API_BASE_URL_PROD || '/api';
+    const prodUrl = import.meta.env.VITE_API_BASE_URL_PROD || '/api';
+    console.log('[API] Production mode, using:', prodUrl);
+    return prodUrl;
   }
   
   // Development mode
-  return import.meta.env.VITE_API_BASE_URL_DEV || '/api';
+  const devUrl = import.meta.env.VITE_API_BASE_URL_DEV || '/api';
+  console.log('[API] Development mode, using:', devUrl);
+  return devUrl;
 };
 
 const baseURL = getBaseURL();
 
-console.log('API Base URL:', baseURL, '| Mode:', import.meta.env.MODE);
+console.log('[API] Final Base URL:', baseURL, '| Mode:', import.meta.env.MODE, '| Env vars available:', {
+  override: !!import.meta.env.VITE_API_BASE_URL,
+  prod: !!import.meta.env.VITE_API_BASE_URL_PROD,
+  dev: !!import.meta.env.VITE_API_BASE_URL_DEV
+});
 
 // Helper function to get the Clerk token. This assumes Clerk is initialized.
 export const getAuthToken = async () => {
