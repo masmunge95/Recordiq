@@ -12,10 +12,23 @@ export default defineConfig(({ mode }) => {
   const proxyTarget = env.VITE_API_BASE_URL_DEV?.replace('/api', '') || 'http://localhost:5000';
   
   return {
+    base: '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+      },
+    },
+    build: {
+      outDir: 'dist',
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            clerk: ['@clerk/clerk-react'],
+          },
+        },
       },
     },
     server: {
