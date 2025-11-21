@@ -17,10 +17,31 @@ const allowedOrigins = [
 
 // Add production URLs from environment variable
 if (process.env.CORS_ALLOWED_ORIGINS) {
-  allowedOrigins.push(...process.env.CORS_ALLOWED_ORIGINS.split(','));
+  const envOrigins = process.env.CORS_ALLOWED_ORIGINS
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(origin => origin.length > 0);
+  allowedOrigins.push(...envOrigins);
 }
 
-console.log('Allowed CORS origins:', allowedOrigins);
+// Add individual frontend URL environment variables
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL.trim());
+}
+if (process.env.FRONTEND_URL_DEV) {
+  allowedOrigins.push(process.env.FRONTEND_URL_DEV.trim());
+}
+if (process.env.FRONTEND_URL_NGROK) {
+  allowedOrigins.push(process.env.FRONTEND_URL_NGROK.trim());
+}
+if (process.env.FRONTEND_URL_PROD) {
+  allowedOrigins.push(process.env.FRONTEND_URL_PROD.trim());
+}
+
+// Remove duplicates
+const uniqueOrigins = [...new Set(allowedOrigins)];
+
+console.log('Allowed CORS origins:', uniqueOrigins);
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -30,7 +51,7 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) === -1) {
+    if (uniqueOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
@@ -50,9 +71,12 @@ const webhookRoutes = require('./routes/webhookRoutes'); // 1. Import the new we
 const ocrRoutes = require('./routes/ocrRoutes');
 const portalRoutes = require('./routes/portalRoutes');
 const utilityServiceRoutes = require('./routes/utilityServiceRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const subscriptionWebhookRoutes = require('./routes/subscriptionWebhookRoutes');
 const logger = require('./middleware/logger');
 const performanceMonitor = require('./middleware/performanceMonitor');
 const errorHandler = require('./middleware/errorHandler');
+const { startScheduledTasks } = require('./services/subscriptionScheduler');
 
 // Initialize Express app
 const app = express();
@@ -99,9 +123,11 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/webhooks', webhookRoutes); // 2. Use the webhook router
+app.use('/api/webhooks', subscriptionWebhookRoutes); // Subscription webhooks
 app.use('/api/ocr', ocrRoutes);
 app.use('/api/portal', portalRoutes);
 app.use('/api/services', utilityServiceRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // --- Error Handling Middleware ---
 // This should be the last piece of middleware
@@ -111,4 +137,9 @@ const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    
+    // Start subscription scheduled tasks
+    if (process.env.ENABLE_SUBSCRIPTION_SCHEDULER !== 'false') {
+        startScheduledTasks();
+    }
 });

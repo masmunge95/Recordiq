@@ -17,9 +17,11 @@ const FeatureCard = ({ icon, title, description }) => {
   );
 };
 
-const PenIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 3.732z" /></svg>;
-const CategoryIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>;
-const AuthIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>;
+const DocumentIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+const ReceiptIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" /></svg>;
+const LockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>;
+const CreditCardIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>;
+const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
 
 // This wrapper component prevents the `unsafeMetadata` prop from being passed to the DOM element.
 // It accepts the props from SignUpButton, strips out the one it doesn't need, and forwards the rest.
@@ -76,18 +78,18 @@ export default function HomePage({ setScrollTarget }) {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-lg mb-8">
-              Welcome to the all-new .<br />
-              Built with care on MERN, and kept safe by Clerk. Sign in below to start creating or exploring.
+              Your complete invoice and payment management solution.<br />
+              Create invoices, scan receipts with OCR, track payments, and manage customers—all in one platform.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
               <SignUpButton mode="modal" unsafeMetadata={{ role: 'seller' }}>
                 <SignUpButtonWrapper size="lg" variant="primary">
-                    Start selling your products
+                    Start Managing Invoices
                 </SignUpButtonWrapper>
               </SignUpButton>
               <SignUpButton mode="modal" unsafeMetadata={{ role: 'customer' }}>
                 <SignUpButtonWrapper size="lg" variant="secondary">
-                    Join today and start shopping
+                    View Your Invoices
                 </SignUpButtonWrapper>
               </SignUpButton>
             </div>
@@ -96,60 +98,59 @@ export default function HomePage({ setScrollTarget }) {
           {/* Features Section */}
           <section>
             <h2 className="text-3xl font-bold text-center mb-12 ">
-              Features
+              Why Choose Recordiq?
             </h2>
             <p className="text-center mx-auto max-w-2xl text-lg mb-12">
-              Discover the features that make Recordiq more than just another platform —
-              your space to buy, sell, and connect.
+              Everything you need to manage invoices, payments, and customer records in one powerful platform.
             </p>
             <div className="flex flex-wrap justify-center gap-8">
               <FeatureCard
-                icon={<PenIcon />}
-                title="Seller-Friendly Interface"
+                icon={<DocumentIcon />}
+                title="Invoice Management"
                 description={ 
                   <>
-                    <span className="block font-bold">Manage your products with ease.</span><br />
-                    <span className="block">With a user-friendly interface designed for sellers, you can easily add, update, and organize your product listings straight from the dashboard.</span>
+                    <span className="block font-bold">Create professional invoices instantly.</span><br />
+                    <span className="block">Generate, send, and track invoices with ease. Monitor payment status from draft to paid in real-time.</span>
                   </>
                 }
               />
               <FeatureCard
-                icon={<CategoryIcon />}
-                title="Comprehensive Record Keeping"
+                icon={<ReceiptIcon />}
+                title="OCR Document Scanning"
                 description={
                   <>
-                    <span className="block font-bold">Record tracking made easier.</span><br />
-                    <span className="block">Keep track of every sale, service, and transaction with ease, ensuring your business runs smoothly and efficiently.</span>
+                    <span className="block font-bold">Scan receipts and extract data automatically.</span><br />
+                    <span className="block">Upload images of invoices or receipts and let AI extract the data to auto-populate your records.</span>
                   </>
                 }
               />
               <FeatureCard
-                icon={<AuthIcon />}
-                title="Effortless Security"
+                icon={<LockIcon />}
+                title="Secure Authentication"
                 description={
                   <>
-                    <span className="block font-bold">Sign in seamlessly and safely.</span><br />
-                    <span className="block">Clerk keeps your data protected behind the scenes so you can focus on sharing your voice — stress-free and secure.</span>
+                    <span className="block font-bold">Your data is protected and private.</span><br />
+                    <span className="block">Enterprise-grade security powered by Clerk keeps your financial information safe and compliant.</span>
                   </>
                 }
               />
               <FeatureCard
-                icon={<AuthIcon />}
-                title="Invoice & Payment Management"
+                icon={<CreditCardIcon />}
+                title="Payment Processing"
                 description={
                   <>
-                    <span className="block font-bold">Manage your invoices and payments effortlessly.</span><br />
-                    <span className="block">Keep track of all your financial transactions in one place, ensuring smooth and efficient business operations.</span>
+                    <span className="block font-bold">Accept payments seamlessly.</span><br />
+                    <span className="block">Integrated payment gateway allows customers to pay invoices online with automatic status updates.</span>
                   </>
                 }
               />
               <FeatureCard
-                icon={<AuthIcon />}
-                title="Customer Insights"
+                icon={<UsersIcon />}
+                title="Customer Management"
                 description={
                   <>
-                    <span className="block font-bold">Gain valuable insights into your customers.</span><br />
-                    <span className="block">Understand customer behavior and preferences to tailor your offerings and improve satisfaction.</span>
+                    <span className="block font-bold">Track customer information and history.</span><br />
+                    <span className="block">Maintain detailed customer profiles, view payment history, and access insights to build stronger relationships.</span>
                   </>
                 }
               />

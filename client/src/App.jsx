@@ -20,6 +20,7 @@ import RoleSelectionPage from './pages/RoleSelectionPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import UtilityServicesPage from './pages/UtilityServicesPage';
 import SellerDashboardPage from './pages/SellerDashboardPage';
+import SubscriptionPage from './pages/SubscriptionPage';
 
 const AppLayout = () => (
   <Layout>
@@ -82,6 +83,7 @@ function App() {
           <Route path="customer-dashboard" element={<PrivateRoute><CustomerDashboardPage /></PrivateRoute>} />
           <Route path="seller-dashboard" element={<PrivateRoute><SellerDashboardPage /></PrivateRoute>} />
           <Route path="select-role" element={<PrivateRoute><RoleSelectionPage /></PrivateRoute>} />
+          <Route path="subscription" element={<PrivateRoute><SubscriptionPage /></PrivateRoute>} />
 
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />

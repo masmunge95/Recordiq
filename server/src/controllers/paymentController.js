@@ -4,6 +4,7 @@ const Customer = require('../models/Customer');
 const asyncHandler = require('../utils/asyncHandler');
 const mongoose = require('mongoose');
 const paymentProvider = require('../utils/paymentProvider');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * @desc    Create a pending payment and get a payment link from IntaSend
@@ -11,11 +12,24 @@ const paymentProvider = require('../utils/paymentProvider');
  * @access  Private
  */
 exports.makePayment = asyncHandler(async (req, res) => {
-    const { _id, invoiceId, name, email, phone } = req.body;
+    const { _id, invoiceId, name, email, phone, paymentMethod } = req.body;
 
-    if (!_id || !invoiceId || !name || !email || !phone) {
+    if (!_id || !invoiceId || !name || !email) {
         res.status(400);
         throw new Error('Please provide _id and all required payment details.');
+    }
+
+    // Validate payment method
+    const method = paymentMethod || 'mpesa'; // Default to M-Pesa for backward compatibility
+    if (!['mpesa', 'card'].includes(method)) {
+        res.status(400);
+        throw new Error('Invalid payment method. Use "mpesa" or "card".');
+    }
+
+    // M-Pesa requires phone number
+    if (method === 'mpesa' && !phone) {
+        res.status(400);
+        throw new Error('Phone number is required for M-Pesa payment.');
     }
 
     const invoice = await Invoice.findById(invoiceId);
@@ -32,17 +46,33 @@ exports.makePayment = asyncHandler(async (req, res) => {
 
     const [firstName, ...lastName] = name.split(' ');
 
-    const response = await paymentProvider.collectMpesaPayment({
-        first_name: firstName,
-        last_name: lastName.join(' '),
-        amount: invoice.total,
-        currency: 'KES',
-        email,
-        phone_number: phone,
-        api_ref: invoice._id.toString(),
-    });
+    let response;
 
-    res.status(200).json(response);
+    if (method === 'mpesa') {
+        response = await paymentProvider.collectMpesaPayment({
+            first_name: firstName,
+            last_name: lastName.join(' '),
+            amount: invoice.total,
+            currency: 'KES',
+            email,
+            phone_number: phone,
+            api_ref: invoice._id.toString(),
+        });
+    } else if (method === 'card') {
+        response = await paymentProvider.collectCardPayment({
+            first_name: firstName,
+            last_name: lastName.join(' '),
+            amount: invoice.total,
+            currency: 'KES', // or 'USD' depending on your preference
+            email,
+            api_ref: invoice._id.toString(),
+        });
+    }
+
+    res.status(200).json({
+        ...response,
+        paymentMethod: method
+    });
 });
 
 /**
@@ -110,6 +140,7 @@ exports.handlePaymentWebhook = asyncHandler(async (req, res) => {
         try {
             // Create the Payment record
             const payment = new Payment({
+                _id: uuidv4(), // Generate UUID for payment ID
                 invoice: invoiceId,
                 customer: invoice.customer,
                 amount: verifiedData.invoice.value,

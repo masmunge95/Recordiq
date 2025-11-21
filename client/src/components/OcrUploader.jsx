@@ -3,7 +3,7 @@ import { useTheme } from '../context/ThemeContext';
 import { uploadForOcr } from '../services/ocrService';
 import Button from './Button';
 
-const OcrUploader = ({ onOcrComplete }) => {
+const OcrUploader = ({ onOcrComplete, userRole = 'seller' }) => {
   const { theme } = useTheme();
   const [fileToUpload, setFileToUpload] = useState(null);
   const [uploadType, setUploadType] = useState(''); // 'receipt' or 'utility'
@@ -54,23 +54,39 @@ const OcrUploader = ({ onOcrComplete }) => {
     <div className={`my-4 p-4 border rounded-lg shadow-sm ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
       <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Scan a New Document</h3>
       <p className={`text-sm mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-        Choose the type of document you want to scan to get the most accurate results.
+        {userRole === 'customer' 
+          ? 'Upload payment proofs or utility meter readings for verification.'
+          : 'Upload any document type: photos, receipts, PDFs, Word docs, Excel sheets, or handwritten notes.'
+        }
       </p>
       <div className="flex flex-col sm:flex-row gap-4">
         <Button onClick={() => triggerFileUpload('receipt')} variant="primary" className="flex-1" disabled={loading}>
-          {loading && uploadType === 'receipt' ? 'Analyzing...' : 'Scan Receipt / Invoice'}
+          {loading && uploadType === 'receipt' ? 'Analyzing...' : '📄 Receipt / Invoice'}
         </Button>
         <Button onClick={() => triggerFileUpload('utility')} variant="secondary" className="flex-1" disabled={loading}>
-          {loading && uploadType === 'utility' ? 'Analyzing...' : 'Scan Utility Reading'}
+          {loading && uploadType === 'utility' ? 'Analyzing...' : '💡 Utility Reading'}
         </Button>
+        {userRole === 'seller' && (
+          <>
+            <Button onClick={() => triggerFileUpload('inventory')} variant="secondary" className="flex-1" disabled={loading}>
+              {loading && uploadType === 'inventory' ? 'Analyzing...' : '📦 Inventory List'}
+            </Button>
+            <Button onClick={() => triggerFileUpload('customer-consumption')} variant="secondary" className="flex-1" disabled={loading}>
+              {loading && uploadType === 'customer-consumption' ? 'Analyzing...' : '📊 Customer Records'}
+            </Button>
+          </>
+        )}
       </div>
       <input
         type="file"
         ref={fileInputRef}
         style={{ display: 'none' }}
         onChange={handleFileChange}
-        accept="image/*,application/pdf"
+        accept="image/*,application/pdf,.docx,.xlsx,.pptx"
       />
+      <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+        Supported: JPG, PNG, PDF, Word (.docx), Excel (.xlsx), PowerPoint (.pptx), handwritten notes
+      </p>
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
     </div>
   );

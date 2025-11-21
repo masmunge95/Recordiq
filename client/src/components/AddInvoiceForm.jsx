@@ -197,7 +197,7 @@ const AddInvoiceForm = ({ onSaveInvoice, onCancel, invoiceToEdit }) => {
               />
               <input
                 type="number"
-                placeholder="Price"
+                placeholder="Price (KSH)"
                 value={item.unitPrice !== undefined && item.unitPrice !== null ? item.unitPrice : ''}
                 onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
                 className={`col-span-2 p-2 rounded border text-sm ${inputBg} ${focusRing}`}
@@ -241,10 +241,10 @@ const AddInvoiceForm = ({ onSaveInvoice, onCancel, invoiceToEdit }) => {
                   />
                 </div>
                 <div>
-                  <label className={`text-xs ${secondaryTextColor} block mb-1`}>Unit Price</label>
+                  <label className={`text-xs ${secondaryTextColor} block mb-1`}>Unit Price (KSH)</label>
                   <input
                     type="number"
-                    placeholder="Price"
+                    placeholder="Price (KSH)"
                     value={item.unitPrice !== undefined && item.unitPrice !== null ? item.unitPrice : ''}
                     onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
                     className={`w-full p-2 rounded border text-sm ${inputBg} ${focusRing}`}
@@ -254,7 +254,7 @@ const AddInvoiceForm = ({ onSaveInvoice, onCancel, invoiceToEdit }) => {
               </div>
               
               <div className={`text-right text-sm font-semibold ${textColor} pt-2 border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}`}>
-                Subtotal: ${((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
+                Subtotal: KSH {((item.quantity || 0) * (item.unitPrice || 0)).toFixed(2)}
               </div>
             </div>
           ))}
@@ -264,7 +264,7 @@ const AddInvoiceForm = ({ onSaveInvoice, onCancel, invoiceToEdit }) => {
       </div>
 
       <div className={`text-right font-bold text-lg ${textColor} py-3 border-t border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-        Total: ${Number(total).toFixed(2)}
+        Total: KSH {Number(total).toFixed(2)}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-start sm:justify-end gap-3 mt-4">

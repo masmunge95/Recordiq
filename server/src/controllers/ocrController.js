@@ -574,6 +574,173 @@ const parseOcrResult = (results) => {
     return extractedData;
 };
 
+/**
+ * Parses general documents (inventory lists, customer records) using Document Intelligence layout.
+ * Extracts tables and key-value pairs automatically.
+ */
+const parseGenericDocument = (results) => {
+  const extractedData = {
+    tables: [],
+    keyValuePairs: [],
+    rawText: ''
+  };
+
+  // Handle Document Intelligence layout results
+  if (results.tables) {
+    extractedData.tables = results.tables.map(table => ({
+      rowCount: table.rowCount,
+      columnCount: table.columnCount,
+      cells: table.cells.map(cell => ({
+        content: cell.content,
+        rowIndex: cell.rowIndex,
+        columnIndex: cell.columnIndex
+      }))
+    }));
+  }
+
+  // Extract key-value pairs (useful for forms, customer records)
+  if (results.keyValuePairs) {
+    extractedData.keyValuePairs = results.keyValuePairs
+      .filter(pair => pair.key && pair.value)
+      .map(pair => ({
+        key: pair.key.content,
+        value: pair.value.content
+      }));
+  }
+
+  // Get raw text content
+  if (results.content) {
+    extractedData.rawText = results.content;
+  }
+
+  return extractedData;
+};
+
+/**
+ * Parses utility customer consumption records (tables with customer names and monthly readings).
+ * Works for both handwritten records (images) and Excel sheets.
+ */
+const parseUtilityCustomerRecords = (results) => {
+  const extractedData = {
+    customers: [],
+    headers: [],
+    rawTable: null
+  };
+
+  // Handle Document Intelligence layout results (Excel/PDF tables)
+  if (results.tables && results.tables.length > 0) {
+    const table = results.tables[0]; // Use first table
+    extractedData.rawTable = table;
+
+    // Build a grid from cells
+    const grid = [];
+    for (let i = 0; i < table.rowCount; i++) {
+      grid[i] = new Array(table.columnCount).fill('');
+    }
+
+    table.cells.forEach(cell => {
+      grid[cell.rowIndex][cell.columnIndex] = cell.content;
+    });
+
+    // First row is typically headers (Customer Name, Jan, Feb, Mar, etc.)
+    if (grid.length > 0) {
+      extractedData.headers = grid[0];
+    }
+
+    // Subsequent rows are customer data
+    for (let i = 1; i < grid.length; i++) {
+      const row = grid[i];
+      if (row[0] && row[0].trim()) { // First cell should have customer name
+        const customer = {
+          name: row[0].trim(),
+          readings: {}
+        };
+
+        // Map remaining columns to readings (assuming headers are months)
+        for (let j = 1; j < row.length && j < extractedData.headers.length; j++) {
+          const header = extractedData.headers[j];
+          const value = row[j];
+          if (header && value) {
+            // Try to parse as number (consumption value)
+            const numValue = parseFloat(value.replace(/[^\d.-]/g, ''));
+            customer.readings[header] = isNaN(numValue) ? value : numValue;
+          }
+        }
+
+        extractedData.customers.push(customer);
+      }
+    }
+  }
+  // Handle Computer Vision results (handwritten images)
+  else if (results && Array.isArray(results) && results.length > 0) {
+    // For handwritten tables, OCR returns lines of text
+    // We need to detect table structure from spatial positioning
+    const allLines = results.flatMap(page => page.lines || [])
+      .map(line => ({
+        text: line.text.trim(),
+        midY: getMidY(line.boundingBox),
+        centerX: getCenterX(line.boundingBox),
+        boundingBox: line.boundingBox
+      }))
+      .sort((a, b) => a.midY - b.midY); // Sort by vertical position
+
+    if (allLines.length > 0) {
+      // Group lines by similar Y position (same row)
+      const rows = [];
+      let currentRow = [allLines[0]];
+      const rowThreshold = 50; // pixels
+
+      for (let i = 1; i < allLines.length; i++) {
+        const line = allLines[i];
+        const prevLine = allLines[i - 1];
+        
+        if (Math.abs(line.midY - prevLine.midY) < rowThreshold) {
+          currentRow.push(line);
+        } else {
+          // Sort current row by X position (left to right)
+          currentRow.sort((a, b) => a.centerX - b.centerX);
+          rows.push(currentRow.map(l => l.text));
+          currentRow = [line];
+        }
+      }
+      // Add last row
+      if (currentRow.length > 0) {
+        currentRow.sort((a, b) => a.centerX - b.centerX);
+        rows.push(currentRow.map(l => l.text));
+      }
+
+      // First row as headers
+      if (rows.length > 0) {
+        extractedData.headers = rows[0];
+      }
+
+      // Parse customer data rows
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.length > 0 && row[0]) {
+          const customer = {
+            name: row[0],
+            readings: {}
+          };
+
+          for (let j = 1; j < row.length && j < extractedData.headers.length; j++) {
+            const header = extractedData.headers[j];
+            const value = row[j];
+            if (header && value) {
+              const numValue = parseFloat(value.replace(/[^\d.-]/g, ''));
+              customer.readings[header] = isNaN(numValue) ? value : numValue;
+            }
+          }
+
+          extractedData.customers.push(customer);
+        }
+      }
+    }
+  }
+
+  return extractedData;
+};
+
 // @desc    Upload a document for OCR analysis
 // @route   POST /api/ocr/upload
 // @access  Private
@@ -583,28 +750,63 @@ const uploadAndAnalyze = asyncHandler(async (req, res) => {
     throw new Error('Please upload a file');
   }
 
-  const fileBuffer = req.file.buffer;
+  const fs = require('fs').promises;
+  const filePath = req.file.path; // File is now saved to disk
   const mimeType = req.file.mimetype;
+  const fileName = req.file.filename;
 
   // Get the document type from the request body
-  const { documentType } = req.body; // 'receipt' or 'utility'
+  const { documentType } = req.body; // 'receipt', 'utility', 'inventory', 'customer-consumption'
 
   try {
+    // Read the file from disk
+    const fileBuffer = await fs.readFile(filePath);
+    
     let results;
     let extractedData;
 
-    if (mimeType.startsWith('image/')) {
+    // Supported file types for Document Intelligence (structured documents)
+    const documentIntelligenceTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+      'text/html',
+      'image/tiff',
+      'image/bmp'
+    ];
+
+    // Use Azure Document Intelligence for structured documents (PDFs, Office files, etc.)
+    // Use Azure Computer Vision for simple images (photos, receipts, handwritten notes)
+    if (documentIntelligenceTypes.includes(mimeType)) {
+      console.log(`Processing structured document: ${mimeType}`);
+      
+      // Choose the right model based on document type
+      let model = 'prebuilt-read'; // Default to basic text extraction
+      
+      if (documentType === 'receipt' || documentType === 'invoice') {
+        model = 'prebuilt-invoice'; // Use invoice model for better extraction
+      } else if (documentType === 'inventory' || documentType === 'customer' || documentType === 'customer-consumption') {
+        model = 'prebuilt-layout'; // Use layout model for tables and structured data
+      }
+      
+      results = await analyzeDocument(fileBuffer, model);
+    } else if (mimeType.startsWith('image/')) {
+      console.log(`Processing image with Computer Vision: ${mimeType}`);
       results = await analyzeImage(fileBuffer);
-    } else if (mimeType === 'application/pdf') {
-      results = await analyzeDocument(fileBuffer);
     } else {
       res.status(400);
-      throw new Error('Unsupported file type. Please upload an image or a PDF document.');
+      throw new Error('Unsupported file type. Supported: Images (JPG, PNG), PDF, Word (.docx), Excel (.xlsx), PowerPoint (.pptx)');
     }
 
     // Call the appropriate parser based on the document type
     if (documentType === 'utility') {
       extractedData = parseUtilityBill(results);
+    } else if (documentType === 'customer-consumption') {
+      // Special parser for utility customer consumption records
+      extractedData = parseUtilityCustomerRecords(results);
+    } else if (documentType === 'inventory' || documentType === 'customer') {
+      extractedData = parseGenericDocument(results);
     } else { // Default to receipt/invoice parser
       extractedData = parseOcrResult(results);
     }
@@ -613,6 +815,9 @@ const uploadAndAnalyze = asyncHandler(async (req, res) => {
       message: 'File analyzed successfully',
       data: extractedData,
       documentType: documentType || 'receipt', // Return the type for frontend use
+      fileType: mimeType, // Include original file type for debugging
+      filePath: filePath.replace(/\\/g, '/'), // Normalize path for cross-platform compatibility
+      fileName: fileName,
     });
   } catch (error) {
     console.error('OCR Analysis Error:', error);

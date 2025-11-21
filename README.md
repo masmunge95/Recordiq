@@ -1,49 +1,83 @@
-# Recordiq - Invoice Management & OCR Platform
+# Recordiq - Utility Billing & Invoice Management Platform
 
-A modern, offline-first invoice management system with OCR capabilities for small businesses and service providers. Built with React, Node.js, MongoDB, and Dexie for local-first data synchronization.
+A modern, offline-first utility billing and invoice management system with OCR capabilities for service providers. Built with React, Node.js, MongoDB, Capacitor, and Dexie for seamless local-first data synchronization across web and mobile platforms.
+
+🌐 **Live Demo:** [https://recordiq.vercel.app](https://recordiq.vercel.app)  
+📱 **Platform:** Web + Android Mobile App
+
+## 🌍 UN Sustainable Development Goals
+
+Recordiq contributes to the following UN SDGs:
+
+- **SDG 8 - Decent Work & Economic Growth**: Empowering small businesses, utility providers, and service entrepreneurs with professional tools for financial management, helping formalize operations and scale efficiently
+- **SDG 9 - Industry, Innovation & Infrastructure**: Democratizing access to business infrastructure through technology, making professional invoicing, billing, and payment tools accessible to all
+- **SDG 10 - Reduced Inequalities**: Leveling the playing field for micro-entrepreneurs and utility service providers by providing enterprise-grade tools previously only available to large corporations
+- **SDG 11 - Sustainable Cities & Communities**: Facilitating efficient utility service management and billing, supporting sustainable infrastructure development in communities
 
 ## 🚀 Features
 
-### Core Invoice Management
-- **Create & Manage Invoices** - Generate professional invoices with dynamic line items
-- **Customer Management** - Track customers with contact information and payment history
+### Core Invoice & Billing Management
+- **Create & Manage Invoices** - Generate professional invoices with dynamic line items and service templates
+- **Customer Management** - Track customers with contact information, payment history, and utility consumption
 - **Invoice Status Tracking** - Draft → Sent → Paid workflow with real-time updates
-- **Payment Processing** - Integrated payment gateway for online collections
-- **Invoice Portal** - Customers can view sent invoices via secure portal
+- **Payment Processing** - Integrated IntaSend payment gateway for M-Pesa, cards, and online collections (KSH)
+- **Customer Portal** - Customers can view sent invoices and make payments via secure portal
+
+### Utility Services & Meter Reading
+- **Utility Service Templates** - Configure services (water, electricity, gas) with fees, units, and auto-calculation
+- **Meter Reading Records** - Track meter readings with previous/current readings and automatic consumption calculation
+- **OCR for Meter Reading** - Upload meter photos and extract readings via Azure Computer Vision OCR
+- **Service Fee Calculation** - Automatic fee calculation based on consumption tiers and additional charges
 
 ### OCR & Document Processing
-- **Receipt/Document Scanning** - Upload images and extract invoice data via OCR
-- **Auto-Population** - Scanned data auto-fills invoice forms
-- **Records Management** - Organize and search processed documents
+- **Receipt/Meter Scanning** - Upload images of meters, invoices, or documents for OCR processing
+- **Azure AI Integration** - Powered by Azure Computer Vision and Document Intelligence for accurate extraction
+- **Auto-Population** - Scanned data auto-fills invoice and record forms
+- **Records Management** - Organize and search processed documents with metadata
 
 ### Advanced Capabilities
-- **Utility Services** - Configure service templates with fees and auto-calculation
-- **Role-Based Access** - Separate seller and customer dashboards
-- **Offline Support** - Full offline functionality with background sync
+- **Offline-First Architecture** - Full offline functionality with background sync using Dexie IndexedDB
+- **Role-Based Access** - Separate seller (service provider) and customer dashboards
+- **Subscription Management** - Premium features with IntaSend payment integration (USD pricing, KES processing)
 - **Dark/Light Theme** - User preference persistence across sessions
+- **Android Mobile App** - Native Android app built with Capacitor for on-the-go management
 - **Responsive Design** - Mobile-optimized interface for all devices
 
 ### Business Intelligence
-- **Seller Dashboard** - Overview of invoices, revenue, and top customers
-- **Analytics** - Key metrics: total invoices, sent count, paid count, revenue
-- **Recent Activity** - Quick access to recent invoices and customer interactions
+- **Seller Dashboard** - Overview of invoices, revenue, records, and top customers
+- **Analytics** - Key metrics: total invoices, sent count, paid count, revenue (KSH), customer count
+- **Customer Dashboard** - Track utility consumption, payment history, and pending invoices
+- **Recent Activity** - Quick access to recent invoices, payments, and meter readings
 
 ## 🏗️ Architecture
 
 ### Frontend Stack
-- **React 18** - UI component framework
-- **React Router** - Client-side routing
-- **Tailwind CSS** - Utility-first styling
-- **Dexie 5** - IndexedDB wrapper for offline data
+- **React 19** - UI component framework
+- **React Router 7** - Client-side routing
+- **Tailwind CSS 4** - Utility-first styling
+- **Dexie 4** - IndexedDB wrapper for offline data
 - **Clerk** - Authentication & user management
-- **Vite** - Fast build tool and dev server
+- **Vite 5** - Fast build tool and dev server
+- **Capacitor 7** - Native mobile app wrapper (Android)
+- **Axios** - HTTP client for API calls
 
 ### Backend Stack
 - **Node.js + Express** - REST API server
-- **MongoDB** - Document database
-- **Mongoose** - Schema validation & ORM
+- **MongoDB Atlas** - Cloud document database
+- **Mongoose 8** - Schema validation & ORM
 - **Multer** - File upload handling
-- **Tesseract.js** - OCR processing
+- **Azure Computer Vision** - OCR text extraction
+- **Azure Document Intelligence** - Advanced document processing
+- **IntaSend** - Payment gateway (M-Pesa, Cards, KES/USD)
+- **Clerk** - Authentication webhook integration
+- **Node-Cron** - Subscription scheduler
+- **Nodemailer** - Email notifications
+
+### Mobile Platform
+- **Capacitor** - Cross-platform native runtime
+- **Android SDK 35** - Target Android version
+- **Gradle 8.13** - Android build system
+- **ProGuard/R8** - Code optimization and obfuscation
 
 ### Key Architecture Patterns
 - **Offline-First**: Local-first with background sync to server
@@ -51,50 +85,80 @@ A modern, offline-first invoice management system with OCR capabilities for smal
 - **Idempotent Operations**: Safe retry logic for failed syncs
 - **Role-Based Access Control**: Seller vs customer permission layers
 - **String-based IDs**: UUID strings instead of MongoDB ObjectIds for client-server compatibility
+- **Environment-Based Configuration**: Development, staging, and production URL management
 
 ## 📋 Project Structure
 
 ```
-├── client/                          # React frontend (Vite)
+├── client/                          # React frontend (Vite + Capacitor)
+│   ├── android/                     # Native Android project
+│   │   ├── app/
+│   │   │   ├── src/main/
+│   │   │   │   ├── AndroidManifest.xml
+│   │   │   │   ├── res/
+│   │   │   │   │   ├── values/
+│   │   │   │   │   │   ├── colors.xml
+│   │   │   │   │   │   ├── strings.xml
+│   │   │   │   │   │   └── styles.xml
+│   │   │   │   │   └── xml/
+│   │   │   │   │       ├── network_security_config.xml
+│   │   │   │   │       └── file_paths.xml
+│   │   │   ├── build.gradle
+│   │   │   └── proguard-rules.pro
+│   │   ├── build.gradle
+│   │   ├── variables.gradle
+│   │   ├── keystore.properties.example
+│   │   └── .gitignore
 │   ├── src/
 │   │   ├── components/              # Reusable React components
 │   │   │   ├── Header.jsx
 │   │   │   ├── Footer.jsx
+│   │   │   ├── Layout.jsx
 │   │   │   ├── Button.jsx
 │   │   │   ├── Modal.jsx
 │   │   │   ├── AddInvoiceForm.jsx
 │   │   │   ├── AddRecordForm.jsx
-│   │   │   └── OcrUploader.jsx
+│   │   │   ├── CustomerOcrRecordForm.jsx
+│   │   │   ├── OcrUploader.jsx
+│   │   │   ├── PaymentForm.jsx
+│   │   │   └── ServiceForm.jsx
 │   │   ├── pages/                   # Page components
 │   │   │   ├── DashboardPage.jsx
-│   │   │   ├── SellerDashboardPage.jsx
+│   │   │   ├── SellerDashboardPage.jsx (removed)
 │   │   │   ├── InvoicesPage.jsx
 │   │   │   ├── InvoiceDetailPage.jsx
 │   │   │   ├── CustomersPage.jsx
+│   │   │   ├── CustomerDetailPage.jsx
+│   │   │   ├── CustomerDashboardPage.jsx
 │   │   │   ├── RecordsPage.jsx
 │   │   │   ├── UtilityServicesPage.jsx
-│   │   │   ├── CustomerDashboardPage.jsx
 │   │   │   ├── RoleSelectionPage.jsx
-│   │   │   └── [other pages]
+│   │   │   ├── AboutPage.jsx
+│   │   │   ├── ContactPage.jsx
+│   │   │   └── PrivacyPolicyPage.jsx
 │   │   ├── services/                # API & business logic
-│   │   │   ├── api.js               # Axios instance
+│   │   │   ├── api.js               # Axios instance with env-based URL
 │   │   │   ├── syncService.js       # Offline sync engine
 │   │   │   ├── invoiceService.js
 │   │   │   ├── customerService.js
 │   │   │   ├── recordService.js
-│   │   │   ├── dbUtils.js           # Data sanitization
-│   │   │   └── [other services]
+│   │   │   ├── utilityService.js
+│   │   │   ├── paymentService.js
+│   │   │   ├── portalService.js
+│   │   │   └── ocrService.js
 │   │   ├── context/                 # React context
 │   │   │   └── ThemeContext.jsx
-│   │   ├── db.js                    # Dexie schema definition
+│   │   ├── db.js                    # Dexie schema definition (v5)
 │   │   ├── App.jsx                  # Root component & routing
 │   │   └── main.jsx
 │   ├── public/
-│   │   ├── recordiq.svg
 │   │   └── service-worker.js        # Offline service worker
+│   ├── .env                         # Environment variables (DEV/PROD URLs)
+│   ├── .env.example
 │   ├── index.html
 │   ├── package.json
-│   ├── vite.config.js
+│   ├── vite.config.js               # Environment-aware proxy config
+│   ├── capacitor.config.json        # Capacitor mobile configuration
 │   ├── tailwind.config.js
 │   └── jsconfig.json
 │
@@ -110,15 +174,14 @@ A modern, offline-first invoice management system with OCR capabilities for smal
 │   │   │   ├── paymentController.js
 │   │   │   ├── ocrController.js
 │   │   │   ├── portalController.js
-│   │   │   ├── utilityServiceController.js
-│   │   │   └── salesController.js
+│   │   │   └── utilityServiceController.js
 │   │   ├── models/                  # MongoDB schemas
 │   │   │   ├── Invoice.js
 │   │   │   ├── Customer.js
 │   │   │   ├── Record.js
 │   │   │   ├── Payment.js
 │   │   │   ├── UtilityService.js
-│   │   │   └── [other models]
+│   │   │   └── Counter.js
 │   │   ├── routes/                  # API endpoints
 │   │   │   ├── invoiceRoutes.js
 │   │   │   ├── customerRoutes.js
@@ -126,7 +189,8 @@ A modern, offline-first invoice management system with OCR capabilities for smal
 │   │   │   ├── paymentRoutes.js
 │   │   │   ├── ocrRoutes.js
 │   │   │   ├── portalRoutes.js
-│   │   │   └── [other routes]
+│   │   │   ├── utilityServiceRoutes.js
+│   │   │   └── webhookRoutes.js
 │   │   ├── middleware/              # Express middleware
 │   │   │   ├── authMiddleware.js
 │   │   │   ├── errorHandler.js
@@ -134,16 +198,24 @@ A modern, offline-first invoice management system with OCR capabilities for smal
 │   │   │   ├── uploadMiddleware.js
 │   │   │   └── performanceMonitor.js
 │   │   ├── services/
-│   │   │   └── ocrService.js
+│   │   │   ├── ocrService.js        # Azure OCR integration
+│   │   │   └── emailService.js      # Nodemailer email service
 │   │   └── utils/
 │   │       ├── asyncHandler.js
-│   │       └── paymentProvider.js
+│   │       └── paymentProvider.js   # IntaSend integration
 │   ├── uploads/                     # User-uploaded files
+│   │   ├── invoices/
+│   │   └── records/
+│   ├── .env                         # Environment configuration
 │   ├── package.json
 │   ├── jest.config.js
 │   └── tests/
+│       ├── setup.js
 │       ├── unit/
 │       └── integration/
+│
+├── guides/
+│   └── ANDROID_PACKAGING.md         # Comprehensive Android build guide
 │
 └── README.md (this file)
 ```
@@ -201,44 +273,70 @@ All IDs are **strings** (not MongoDB ObjectIds) to ensure client-server compatib
 
 | Technology | Purpose | Version |
 |-----------|---------|---------|
-| React | UI framework | 18.x |
-| Vite | Build tool | 4.x |
-| React Router | Client routing | 6.x |
-| Tailwind CSS | Styling | 3.x |
-| Dexie | IndexedDB layer | 5.x |
-| Clerk | Auth & user mgmt | Latest |
-| Axios | HTTP client | Latest |
+| React | UI framework | 19.2.0 |
+| Vite | Build tool | 6.x |
+| React Router | Client routing | 7.9.6 |
+| Tailwind CSS | Styling | 4.1.17 |
+| Dexie | IndexedDB layer | 4.2.1 |
+| Clerk | Auth & user mgmt | 5.55.0 |
+| Axios | HTTP client | 1.13.2 |
+| Capacitor | Mobile runtime | 7.4.4 |
+| Capacitor Android | Android platform | 7.4.4 |
 
 ### Backend Technologies
 
 | Technology | Purpose | Version |
 |-----------|---------|---------|
 | Node.js | Runtime | 18+ |
-| Express | Web framework | 4.x |
-| MongoDB | Database | 5.0+ |
-| Mongoose | ODM | 7.x |
-| Multer | File uploads | 1.4.x |
-| Tesseract.js | OCR | 4.x |
-| Jest | Testing | Latest |
+| Express | Web framework | 4.18.2 |
+| MongoDB | Database | 5.0+ (Atlas) |
+| Mongoose | ODM | 8.19.4 |
+| Multer | File uploads | 1.4.5-lts.1 |
+| Azure Computer Vision | OCR text extraction | Latest |
+| Azure Document Intelligence | Document processing | Latest |
+| IntaSend | Payment gateway | 1.1.2 |
+| Clerk SDK Node | Backend auth | 4.13.23 |
+| Node-Cron | Task scheduler | 3.0.3 |
+| Nodemailer | Email service | 6.10.1 |
+| Jest | Testing | 30.2.0 |
+
+### Mobile & Build Technologies
+
+| Technology | Purpose | Version |
+|-----------|---------|---------|
+| Gradle | Android build | 8.13.1 |
+| Android SDK | Target platform | API 35 |
+| Min SDK | Minimum support | API 23 |
+| ProGuard/R8 | Code optimization | Built-in |
+| Java | Android compatibility | 17 |
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB 5.0+ (local or Atlas)
+- MongoDB 5.0+ Atlas (cloud database)
 - Clerk account for authentication
+- Azure account for Computer Vision & Document Intelligence
+- IntaSend account for payment processing
 - Modern browser with IndexedDB support
+- (Optional) Android Studio for mobile app development
 
 ### Frontend Setup
 
 ```bash
 cd client
 npm install
-cp .env.example .env.local
 
-# Add your Clerk API keys to .env.local
-VITE_CLERK_PUBLISHABLE_KEY=your_key_here
+# Configure environment variables
+# Edit .env with your API keys and URLs
 
+# Development URLs (for ngrok testing)
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
+VITE_API_BASE_URL_DEV=https://your-ngrok-url.ngrok-free.dev/api
+VITE_API_BASE_URL_PROD=https://your-production-backend.onrender.com/api
+VITE_API_BASE_URL=https://your-ngrok-url.ngrok-free.dev/api
+
+# Start development server
 npm run dev
 # Frontend runs on http://localhost:5173
 ```
@@ -248,69 +346,172 @@ npm run dev
 ```bash
 cd server
 npm install
-cp .env.example .env
 
-# Add configuration to .env
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/recordiq
-CLERK_SECRET_KEY=your_secret_key
+# Configure environment variables in .env
+NODE_ENV=development
 PORT=5000
+MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/recordiq
+CLERK_SECRET_KEY=sk_test_your_secret_key
+CLERK_WEBHOOK_SECRET_LOCAL=whsec_your_webhook_secret
 
+# IntaSend Payment Configuration
+INTASEND_PUBLISHABLE_KEY=ISPubKey_test_your_key
+INTASEND_SECRET_KEY=ISSecretKey_test_your_key
+
+# Azure OCR Configuration
+AZURE_COMPUTER_VISION_KEY=your_azure_key
+AZURE_COMPUTER_VISION_ENDPOINT=https://your-service.cognitiveservices.azure.com/
+AZURE_DOCUMENT_INTELLIGENCE_KEY=your_azure_key
+AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT=https://your-service.cognitiveservices.azure.com/
+
+# Frontend URLs for CORS
+FRONTEND_URL_DEV=http://localhost:5173
+FRONTEND_URL_NGROK=https://your-ngrok-url.ngrok-free.dev
+FRONTEND_URL_PROD=https://your-frontend.vercel.app
+FRONTEND_URL=http://localhost:5173
+
+CORS_ALLOWED_ORIGINS=http://localhost:5173,https://your-ngrok-url.ngrok-free.dev,capacitor://localhost,http://localhost
+
+# Start development server
 npm run dev
 # Backend runs on http://localhost:5000
 ```
 
+### Android App Setup
+
+```bash
+cd client
+
+# Build web assets
+npm run build
+
+# Initialize Capacitor (first time only)
+npm run cap:init
+
+# Add Android platform (first time only)
+npm run cap:add:android
+
+# Sync web assets to Android
+npm run cap:sync
+
+# Open in Android Studio
+npm run cap:open:android
+
+# Build debug APK
+npm run build:android:debug
+
+# Build release APK (requires keystore)
+npm run build:android:release
+```
+
+See `guides/ANDROID_PACKAGING.md` for comprehensive Android build instructions.
+
 ### Initial Configuration
 
 1. **Clerk Setup**
-   - Create organization in Clerk dashboard
-   - Set up authentication flows
-   - Configure webhooks for role management
+   - Create application in Clerk dashboard
+   - Get publishable key for frontend
+   - Get secret key for backend
+   - Configure webhooks for user management
+   - Add custom metadata fields: `role` (seller/customer)
 
-2. **MongoDB Setup**
-   - Create database `recordiq`
+2. **MongoDB Atlas Setup**
+   - Create free cluster on MongoDB Atlas
+   - Whitelist your IP address
+   - Create database user with read/write permissions
+   - Get connection string
    - Collections auto-created on first write
-   - Indexes created by Mongoose schemas
 
-3. **Environment Variables**
-   - Frontend: `VITE_CLERK_PUBLISHABLE_KEY`
-   - Backend: `MONGODB_URI`, `CLERK_SECRET_KEY`, `STRIPE_KEY` (if using payments)
+3. **Azure Setup**
+   - Create Computer Vision resource
+   - Create Document Intelligence resource
+   - Get API keys and endpoints for both services
+   - Configure for OCR text extraction
+
+4. **IntaSend Setup**
+   - Create account on IntaSend
+   - Get test API keys for development
+   - Get production API keys for live payments
+   - Configure webhooks for payment notifications
+   - Note: Pricing in USD, processing in KES
+
+5. **Environment Variables Summary**
+   - **Frontend**: `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_API_BASE_URL_DEV`, `VITE_API_BASE_URL_PROD`
+   - **Backend**: All keys listed in `.env` template above
 
 ## 📱 Key Features Walkthrough
 
-### Creating an Invoice
+### Creating a Utility Service Invoice
 
 ```jsx
 // User flow
 1. Navigate to /invoices
 2. Click "Add Invoice"
-3. Select customer
-4. Add line items (description, qty, price)
-5. Set due date
-6. Click "Save Invoice"
+3. Select customer from dropdown
+4. Add utility service (water/electricity/gas)
+5. Enter meter reading (previous/current)
+6. Additional line items if needed
+7. System calculates consumption and fees automatically
+8. Set due date
+9. Click "Save Invoice"
 
 // Behind the scenes
 → Locally stored in Dexie as draft
 → Added to syncQueue
-→ 5-second sync sends to server
-→ Server generates invoiceNumber
+→ Background sync sends to server (5-second interval)
+→ Server generates invoiceNumber (auto-increment)
 → Response synced back to local DB
+→ UI updates with server-generated data
 ```
 
-### Sending Invoice to Customer
+### OCR Meter Reading
+
+```jsx
+// User flow
+1. Navigate to /records
+2. Click "Add Record with OCR"
+3. Upload meter photo
+4. Azure Computer Vision extracts text
+5. System identifies meter reading numbers
+6. Auto-populates current reading
+7. Select service and customer
+8. Previous reading fetched automatically
+9. Consumption calculated
+10. Save record
+
+// Behind the scenes
+→ Image uploaded to server via multer
+→ Azure Computer Vision API called
+→ OCR text extracted and parsed
+→ Meter reading identified via pattern matching
+→ Record saved with OCR metadata
+→ Synced to local Dexie DB
+```
+
+### Sending Invoice & Payment
 
 ```jsx
 // User flow
 1. Open invoice detail (/invoices/{id})
 2. Click "Send Invoice"
 3. Status changes to "sent"
-4. Customer receives access via portal
+4. Customer receives email notification
+5. Customer views invoice in portal
+6. Customer clicks "Pay Now"
+7. Redirected to IntaSend payment page
+8. Completes M-Pesa or card payment
+9. Webhook updates invoice status to "paid"
 
 // Behind the scenes
 → Local status updated to "sent"
-→ syncQueue item added with action="send"
-→ Sync calls updateInvoice(id, { status: 'sent' })
-→ Server response written back to local DB
-→ Customer can now view on portal (/customer-dashboard)
+→ syncQueue item added with action="update"
+→ Server updates invoice status
+→ Email service sends notification to customer
+→ Customer accesses /customer-dashboard
+→ Payment initiated via IntaSend API
+→ Webhook receives payment confirmation
+→ Invoice status updated to "paid"
+→ Background sync updates local DB
 ```
 
 ### Offline Functionality

@@ -1,8 +1,25 @@
 import axios from 'axios';
 
-// Use environment variable for API URL, fallback to /api for dev (Vite proxy handles it)
-// In production, VITE_API_BASE_URL should be set to your backend URL (e.g., https://your-backend.onrender.com)
-const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Smart API URL selection based on environment
+// Priority: VITE_API_BASE_URL > DEV/PROD based on mode > fallback to /api
+const getBaseURL = () => {
+  // If explicitly set, use it (for manual override)
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Auto-select based on build mode
+  if (import.meta.env.MODE === 'production') {
+    return import.meta.env.VITE_API_BASE_URL_PROD || '/api';
+  }
+  
+  // Development mode
+  return import.meta.env.VITE_API_BASE_URL_DEV || '/api';
+};
+
+const baseURL = getBaseURL();
+
+console.log('API Base URL:', baseURL, '| Mode:', import.meta.env.MODE);
 
 // Helper function to get the Clerk token. This assumes Clerk is initialized.
 export const getAuthToken = async () => {

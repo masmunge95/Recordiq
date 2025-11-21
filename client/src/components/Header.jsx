@@ -72,6 +72,7 @@ export default function Header() {
                 <NavLink to="/invoices" theme={theme}>Invoices</NavLink>
                 <NavLink to="/customers" theme={theme}>Customers</NavLink>
                 <NavLink to="/services" theme={theme}>Services</NavLink>
+                <NavLink to="/subscription" theme={theme}>Subscription</NavLink>
               </>
             )}
             {user && !isSeller && (
@@ -116,6 +117,7 @@ export default function Header() {
                 <Link to="/invoices" onClick={closeMenu} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}>Invoices</Link>
                 <Link to="/customers" onClick={closeMenu} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}>Customers</Link>
                 <Link to="/services" onClick={closeMenu} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}>Services</Link>
+                <Link to="/subscription" onClick={closeMenu} className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-700 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}>Subscription</Link>
               </>
             )}
             {user && !isSeller && (

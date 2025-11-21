@@ -8,6 +8,18 @@ const intasend = new IntaSend(
     true 
 );
 
+// USD to KSH exchange rate (approximate - should be updated from live API in production)
+const USD_TO_KSH_RATE = 130;
+
+/**
+ * Converts USD amount to KSH
+ * @param {number} usdAmount - Amount in USD
+ * @returns {number} Amount in KSH
+ */
+const convertUsdToKsh = (usdAmount) => {
+    return Math.round(usdAmount * USD_TO_KSH_RATE);
+};
+
 /**
  * Creates a checkout URL with Intasend.
  * @param {object} options - Options for creating the checkout.
@@ -76,4 +88,119 @@ const collectMpesaPayment = async ({ amount, currency, email, phone_number, api_
     }
 };
 
-module.exports = { createIntasendCheckout, verifyTransaction, collectMpesaPayment };
+/**
+ * Creates a card payment checkout with IntaSend.
+ * @param {object} options - Options for creating the card payment.
+ * @param {number} options.amount - The amount to charge.
+ * @param {string} options.currency - The currency code (e.g., 'KES', 'USD').
+ * @param {string} options.email - Customer email address.
+ * @param {string} options.api_ref - Your internal reference for the transaction (e.g., invoiceId).
+ * @param {string} options.first_name - Customer first name.
+ * @param {string} options.last_name - Customer last name.
+ * @returns {Promise<object>} The checkout response with payment URL.
+ */
+const collectCardPayment = async ({ amount, currency, email, api_ref, first_name, last_name }) => {
+    try {
+        const collection = intasend.collection();
+        const response = await collection.charge({
+            first_name,
+            last_name,
+            email,
+            host: process.env.FRONTEND_URL || 'http://localhost:3000',
+            amount,
+            currency,
+            api_ref,
+            method: 'CARD-PAYMENT', // Only show card payment option
+            redirect_url: process.env.FRONTEND_URL || 'http://localhost:3000'
+        });
+        return response;
+    } catch (error) {
+        console.error('Intasend Card Payment Error:', error.message);
+        throw new Error('Failed to initiate card payment.');
+    }
+};
+
+/**
+ * Process payment for subscriptions - converts USD to KSH and initiates payment
+ * @param {object} options - Payment options
+ * @param {number} options.amount - Amount in USD
+ * @param {string} options.currency - Original currency (USD for subscriptions)
+ * @param {string} options.email - Customer email
+ * @param {string} options.phoneNumber - Phone number for M-Pesa
+ * @param {string} options.method - Payment method (MPESA or CARD)
+ * @param {object} options.metadata - Additional metadata (userId, tier, type, etc.)
+ * @returns {Promise<object>} Payment result with success status and transaction details
+ */
+const processPayment = async ({ amount, currency, email, phoneNumber, method, metadata }) => {
+    try {
+        // Convert USD to KSH for Instasend (Instasend requires KES)
+        const amountInKsh = currency === 'USD' ? convertUsdToKsh(amount) : amount;
+        const paymentCurrency = 'KES'; // Instasend uses KES
+
+        console.log(`Processing ${method} payment: $${amount} USD = ${amountInKsh} KSH`);
+
+        // Generate unique API reference
+        const api_ref = `sub_${metadata.userId}_${Date.now()}`;
+
+        let response;
+
+        if (method === 'MPESA') {
+            // M-Pesa payment
+            response = await collectMpesaPayment({
+                amount: amountInKsh,
+                currency: paymentCurrency,
+                email,
+                phone_number: phoneNumber,
+                api_ref,
+                first_name: metadata.firstName || 'Subscriber',
+                last_name: metadata.lastName || 'User',
+            });
+
+            return {
+                success: true,
+                message: 'M-Pesa payment initiated successfully',
+                transactionId: response.invoice?.invoice_id || api_ref,
+                paymentUrl: response.invoice?.api_ref || null,
+                amountUsd: amount,
+                amountKsh: amountInKsh,
+            };
+        } else if (method === 'CARD') {
+            // Card payment
+            response = await collectCardPayment({
+                amount: amountInKsh,
+                currency: paymentCurrency,
+                email,
+                api_ref,
+                first_name: metadata.firstName || 'Subscriber',
+                last_name: metadata.lastName || 'User',
+            });
+
+            return {
+                success: true,
+                message: 'Card payment initiated successfully',
+                transactionId: response.invoice?.invoice_id || api_ref,
+                paymentUrl: response.checkout?.url || response.url || null,
+                amountUsd: amount,
+                amountKsh: amountInKsh,
+            };
+        } else {
+            throw new Error(`Unsupported payment method: ${method}`);
+        }
+    } catch (error) {
+        console.error('Payment processing error:', error);
+        return {
+            success: false,
+            message: error.message || 'Payment processing failed',
+            error: error.message,
+        };
+    }
+};
+
+module.exports = { 
+    createIntasendCheckout, 
+    verifyTransaction, 
+    collectMpesaPayment, 
+    collectCardPayment,
+    processPayment,
+    convertUsdToKsh 
+};

@@ -183,25 +183,87 @@ const RecordsPage = () => {
   }
 
   return (
-    <div className={`p-4 sm:p-6 lg:p-8 min-h-screen`}>
-      <div className={`mb-8 p-6 rounded-lg shadow-md ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-        <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          Welcome back, {user?.firstName || 'User'}!
-        </h1>
-        <h2 className={`text-2xl font-semibold mt-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>Manage Your Records</h2>
-        <p className={`mt-2 text-md ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Here you can view, add, and manage all your sales and expense records. Use the OCR uploader below to quickly digitize your physical receipts.</p>
-      </div>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-4">
-        <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>All Records</h2>
-        {!showAddForm && (
-          <Button onClick={() => setShowAddForm(true)} variant="primary" className="bg-blue-500 text-white px-4 py-2 rounded">
-            Add Record Manually
-          </Button>
-        )}
+    <div className={`p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto min-h-screen`}>
+      {/* Header Section */}
+      <div className={`mb-8 p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div>
+            <h1 className={`text-4xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <span className="inline-flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+                </svg>
+                Receipt Records
+              </span>
+            </h1>
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              Digitize receipts and track expenses with AI-powered OCR
+            </p>
+          </div>
+          {!showAddForm && (
+            <Button onClick={() => setShowAddForm(true)} variant="primary" className="whitespace-nowrap">
+              <span className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                Add Record Manually
+              </span>
+            </Button>
+          )}
+        </div>
       </div>
 
+      {/* Stats Cards */}
+      {!showAddForm && records.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className={`p-6 rounded-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-blue-900/40' : 'bg-blue-100'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Records</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{records.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className={`p-6 rounded-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-green-900/40' : 'bg-green-100'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>With Images</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{records.filter(r => r.imagePath).length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className={`p-6 rounded-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-purple-900/40' : 'bg-purple-100'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Total Amount</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>KSH {records.reduce((sum, r) => sum + (Number(r.amount) || 0), 0).toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OCR Uploader */}
       {!showAddForm && <OcrUploader onOcrComplete={handleOcrComplete} />}
 
+      {/* Add Record Form */}
       {showAddForm && (
         <AddRecordForm
           onAddRecord={handleAddRecord}
@@ -209,21 +271,88 @@ const RecordsPage = () => {
           initialData={ocrData}
         />
       )}
-      <ul>
-        {pagedRecords.map((record) => (
-          <li key={record._id} className={`flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 p-2 border rounded gap-2 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-            <div>
-              <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>{record.description} - ${record.amount}</span>
-              {record.imagePath && (
-                <img src={getFullImageUrl([record.imagePath])} alt={record.description} className="w-20 h-20 object-cover mt-2 sm:mt-0 rounded" />
-              )}
+
+      {/* Records List */}
+      <div className="space-y-4 mt-6">
+        {pagedRecords.length > 0 ? (
+          <>
+            <div className={`mb-4 px-4 py-2 rounded-lg ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-100/80'}`}>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Showing <span className="font-semibold">{pagedRecords.length}</span> of <span className="font-semibold">{records.length}</span> record{records.length !== 1 ? 's' : ''}
+              </p>
             </div>
-            <button onClick={() => handleDeleteRecord(record._id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded self-end sm:self-center">
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+            {pagedRecords.map((record) => (
+              <div key={record._id} className={`p-6 border rounded-xl shadow-md backdrop-blur-sm transition-all hover:shadow-lg ${theme === 'dark' ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'}`}>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-start gap-4">
+                      {record.imagePath && (
+                        <div className="flex-shrink-0">
+                          <img 
+                            src={getFullImageUrl([record.imagePath])} 
+                            alt={record.description} 
+                            className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-700" 
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          {!record.imagePath && (
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${theme === 'dark' ? 'bg-red-900/40' : 'bg-red-100'}`}>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+                              </svg>
+                            </div>
+                          )}
+                          <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{record.description}</h3>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className={`flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-2xl font-bold">KSH {(Number(record.amount) || 0).toFixed(2)}</span>
+                          </div>
+                          {record.recordDate && (
+                            <div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              {new Date(record.recordDate).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button onClick={() => handleDeleteRecord(record._id)} variant="danger" size="sm">
+                    <span className="flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <div className={`text-center py-16 px-6 rounded-2xl ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50/80'}`}>
+            <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+              </svg>
+            </div>
+            <h3 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>No Records Yet</h3>
+            <p className={`mb-6 max-w-md mx-auto ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Start digitizing your receipts using our AI-powered OCR scanner or add records manually.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Pagination controls */}
       {totalPages > 1 && (

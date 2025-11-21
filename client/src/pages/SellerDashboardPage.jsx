@@ -76,10 +76,27 @@ const SellerDashboardPage = () => {
     loadDashboardData();
   }, []);
 
-  const StatCard = ({ label, value, color = 'red' }) => (
-    <div className={`p-4 rounded-lg shadow-md ${cardBgColor} border ${borderColor}`}>
-      <p className={`text-sm font-medium ${secondaryTextColor}`}>{label}</p>
-      <p className={`text-2xl font-bold ${color === 'red' ? 'text-red-600' : 'text-green-600'} mt-2`}>{value}</p>
+  const StatCard = ({ label, value, icon, color = 'red' }) => (
+    <div className={`p-6 rounded-xl shadow-md backdrop-blur-sm transition-all hover:shadow-lg ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+          color === 'green' ? (theme === 'dark' ? 'bg-green-900/40' : 'bg-green-100') :
+          color === 'blue' ? (theme === 'dark' ? 'bg-blue-900/40' : 'bg-blue-100') :
+          color === 'purple' ? (theme === 'dark' ? 'bg-purple-900/40' : 'bg-purple-100') :
+          (theme === 'dark' ? 'bg-red-900/40' : 'bg-red-100')
+        }`}>
+          {icon}
+        </div>
+        <div>
+          <p className={`text-sm font-medium ${secondaryTextColor}`}>{label}</p>
+          <p className={`text-3xl font-bold mt-1 ${
+            color === 'green' ? 'text-green-600 dark:text-green-400' :
+            color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
+            color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
+            'text-red-600 dark:text-red-400'
+          }`}>{value}</p>
+        </div>
+      </div>
     </div>
   );
 
@@ -88,27 +105,75 @@ const SellerDashboardPage = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Welcome Banner */}
-      <div className={`mb-8 p-6 rounded-lg shadow-md ${cardBgColor} border ${borderColor}`}>
-        <h1 className={`text-3xl font-bold ${textColor}`}>Welcome back, {user?.firstName || 'Seller'}!</h1>
-        <p className={`mt-2 text-lg ${secondaryTextColor}`}>Here's a quick overview of your business performance.</p>
+      <div className={`mb-8 p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
+        <h1 className={`text-4xl font-bold ${textColor} mb-2`}>
+          <span className="inline-flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Welcome back, {user?.firstName || 'Seller'}!
+          </span>
+        </h1>
+        <p className={`text-lg ${secondaryTextColor}`}>Here's a quick overview of your business performance</p>
       </div>
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Total Invoices" value={stats.totalInvoices} />
-        <StatCard label="Sent Invoices" value={stats.sentInvoices} />
-        <StatCard label="Paid Invoices" value={stats.paidInvoices} />
-        <StatCard label="Total Revenue" value={`$${stats.totalRevenue.toFixed(2)}`} color="green" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatCard 
+          label="Total Invoices" 
+          value={stats.totalInvoices}
+          color="blue"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          }
+        />
+        <StatCard 
+          label="Pending Payment" 
+          value={stats.sentInvoices}
+          color="purple"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        />
+        <StatCard 
+          label="Paid Invoices" 
+          value={stats.paidInvoices}
+          color="green"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        />
+        <StatCard 
+          label="Total Revenue" 
+          value={`KSH ${stats.totalRevenue.toFixed(2)}`}
+          color="green"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column - Recent Invoices */}
         <div className="lg:col-span-2 space-y-6">
-          <div className={`p-6 rounded-lg shadow-md ${cardBgColor} border ${borderColor}`}>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className={`text-2xl font-semibold ${textColor}`}>Recent Invoices</h2>
+          <div className={`p-6 rounded-xl shadow-md backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className={`text-2xl font-semibold ${textColor} flex items-center gap-2`}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Recent Invoices
+              </h2>
               <Link to="/invoices">
                 <Button variant="secondary" size="sm">View All</Button>
               </Link>
@@ -131,7 +196,7 @@ const SellerDashboardPage = () => {
                         </div>
                         <div className="flex justify-between sm:justify-end items-center gap-4">
                           <div className={`text-sm font-semibold ${textColor}`}>
-                            ${(invoice.total || 0).toFixed(2)}
+                            KSH {(invoice.total || 0).toFixed(2)}
                           </div>
                           <span className={`text-xs font-medium px-2 py-1 rounded ${
                             invoice.status === 'paid'
@@ -157,24 +222,55 @@ const SellerDashboardPage = () => {
         {/* Right column - Quick Actions & Top Customers */}
         <div className="space-y-6">
           {/* Quick Actions */}
-          <div className={`p-6 rounded-lg shadow-md ${cardBgColor} border ${borderColor}`}>
-            <h2 className={`text-2xl font-semibold ${textColor} mb-4`}>Quick Actions</h2>
+          <div className={`p-6 rounded-xl shadow-md backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+            <h2 className={`text-2xl font-semibold ${textColor} mb-6 flex items-center gap-2`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Quick Actions
+            </h2>
             <div className="space-y-3">
-              <Link to="/invoices">
-                <Button variant="primary" className="w-full">Create Invoice</Button>
+              <Link to="/invoices" className="block">
+                <Button variant="primary" className="w-full">
+                  <span className="flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                    </svg>
+                    Create Invoice
+                  </span>
+                </Button>
               </Link>
-              <Link to="/customers">
-                <Button variant="secondary" className="w-full">Manage Customers</Button>
+              <Link to="/customers" className="block">
+                <Button variant="secondary" className="w-full">
+                  <span className="flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Manage Customers
+                  </span>
+                </Button>
               </Link>
-              <Link to="/records">
-                <Button variant="secondary" className="w-full">View Records</Button>
+              <Link to="/records" className="block">
+                <Button variant="secondary" className="w-full">
+                  <span className="flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
+                    </svg>
+                    View Records
+                  </span>
+                </Button>
               </Link>
             </div>
           </div>
 
           {/* Top Customers */}
-          <div className={`p-6 rounded-lg shadow-md ${cardBgColor} border ${borderColor}`}>
-            <h2 className={`text-2xl font-semibold ${textColor} mb-4`}>Top Customers</h2>
+          <div className={`p-6 rounded-xl shadow-md backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+            <h2 className={`text-2xl font-semibold ${textColor} mb-6 flex items-center gap-2`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+              Top Customers
+            </h2>
             {topCustomers.length > 0 ? (
               <ul className={`space-y-3 ${secondaryTextColor}`}>
                 {topCustomers.map((customer, idx) => (
@@ -183,7 +279,7 @@ const SellerDashboardPage = () => {
                       <p className={`text-sm font-medium ${textColor}`}>{idx + 1}. {customer.customerName}</p>
                       <p className="text-xs">{customer.count} invoice{customer.count !== 1 ? 's' : ''}</p>
                     </div>
-                    <span className={`text-sm font-semibold ${textColor}`}>${customer.totalAmount.toFixed(2)}</span>
+                    <span className={`text-sm font-semibold ${textColor}`}>KSH {customer.totalAmount.toFixed(2)}</span>
                   </li>
                 ))}
               </ul>

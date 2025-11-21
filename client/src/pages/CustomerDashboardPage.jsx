@@ -69,9 +69,12 @@ const CustomerDashboardPage = () => {
       try {
         setLoading(true);
         const data = await getMyInvoices();
-        setInvoices(data);
+        // Ensure data is an array before setting state
+        setInvoices(Array.isArray(data) ? data : []);
       } catch (err) {
+        console.error('Error fetching invoices:', err);
         setError('Failed to load your invoices. Please try again later.');
+        setInvoices([]); // Set to empty array on error
       } finally {
         setLoading(false);
       }
@@ -99,17 +102,18 @@ const CustomerDashboardPage = () => {
   const cardBg = theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className={`mb-8 p-6 rounded-lg shadow-md ${cardBg}`}>
-        <h1 className={`text-3xl font-bold ${textColor}`}>
-          Welcome, {user?.firstName || 'Customer'}!
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Welcome Banner */}
+      <div className={`mb-8 p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
+        <h1 className={`text-4xl font-bold ${textColor} mb-2`}>
+          <span className="inline-flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            Welcome, {user?.firstName || 'Customer'}!
+          </span>
         </h1>
-        <h2 className={`text-2xl font-semibold mt-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
-          Your Dashboard
-        </h2>
-        <p className={`mt-2 text-md ${secondaryTextColor}`}>
-          Here you can view your outstanding invoices and make payments. You can also upload documents for review.
-        </p>
+        <p className={`text-lg ${secondaryTextColor}`}>Manage your invoices and upload documents for review</p>
       </div>
 
       <div className="flex justify-end mb-4">
@@ -124,31 +128,106 @@ const CustomerDashboardPage = () => {
         <AddRecordForm onAddRecord={handleAddRecord} onCancel={() => setShowAddForm(false)} initialData={ocrData} />
       )}
 
-      {!showAddForm && <OcrUploader onOcrComplete={handleOcrComplete} />}
+      {!showAddForm && <OcrUploader onOcrComplete={handleOcrComplete} userRole="customer" />}
 
-      <div className="mt-8">
-        <h2 className={`text-2xl font-bold ${textColor}`}>My Invoices</h2>
-        <div className="space-y-4 mt-4">
-          {loading ? (
-            <p className={secondaryTextColor}>Loading your invoices...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : invoices.length > 0 ? (
-            invoices.map(invoice => (
-              <div key={invoice._id} className={`p-4 border rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${cardBg}`}>
-                <div className="flex-grow">
-                  <Link to={`/invoices/${invoice._id}`} className={`font-bold text-lg hover:underline ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
-                    Invoice {invoice.invoiceNumber}
-                  </Link>
-                  <p className={secondaryTextColor}>Due: {new Date(invoice.dueDate).toLocaleDateString()} - <span className="font-medium">${(Number(invoice.total) || 0).toFixed(2)}</span></p>
+      {/* Invoices Section */}
+      <div className={`mt-8 p-6 rounded-xl shadow-md backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/80 border border-gray-200/50'}`}>
+        <h2 className={`text-2xl font-semibold ${textColor} mb-6 flex items-center gap-2`}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          My Invoices
+        </h2>
+
+        {loading ? (
+          <div className={`text-center py-12 ${secondaryTextColor}`}>Loading your invoices...</div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500 text-lg">{error}</p>
+          </div>
+        ) : invoices.length === 0 ? (
+          <div className="text-center py-12">
+            <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
+              theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-100'
+            }`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-10 w-10 ${secondaryTextColor}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className={`text-2xl font-bold ${textColor} mb-2`}>No Invoices Yet</h3>
+            <p className={`text-lg ${secondaryTextColor}`}>Your invoices will appear here when they're created</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {invoices.map((invoice) => (
+              <Link
+                key={invoice._id}
+                to={`/invoices/${invoice._id}`}
+                className={`block p-6 rounded-lg shadow-md border transition-all hover:shadow-lg ${
+                  theme === 'dark'
+                    ? 'bg-gray-700/50 border-gray-600/50 hover:bg-gray-700/70'
+                    : 'bg-white border-gray-200 hover:border-red-300'
+                }`}
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      theme === 'dark' ? 'bg-red-900/40' : 'bg-red-100'
+                    }`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className={`text-xl font-semibold ${textColor} mb-1`}>
+                        Invoice #{invoice.invoiceNumber}
+                      </h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${secondaryTextColor}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p className={`text-sm ${secondaryTextColor}`}>
+                          Due: {new Date(invoice.dueDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium ${
+                        invoice.status === 'paid'
+                          ? theme === 'dark' ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-800'
+                          : invoice.status === 'sent' || invoice.status === 'pending'
+                          ? theme === 'dark' ? 'bg-yellow-900/40 text-yellow-300' : 'bg-yellow-100 text-yellow-800'
+                          : theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {invoice.status === 'paid' ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {invoice.status === 'sent' ? 'Pending' : invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-left md:text-right">
+                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'} mb-2`}>
+                      KSH {(Number(invoice.total) || 0).toFixed(2)}
+                    </p>
+                    <Button variant="primary" size="sm">
+                      <span className="flex items-center gap-1">
+                        View Details
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                    </Button>
+                  </div>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-sm font-semibold ${invoice.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{invoice.status === 'sent' ? 'pending' : invoice.status}</div>
-              </div>
-            ))
-          ) : (
-            <p className={`text-center py-8 ${secondaryTextColor}`}>You have no invoices at the moment.</p>
-          )}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

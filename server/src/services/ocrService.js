@@ -48,12 +48,27 @@ const analyzeImage = async (imageSource) => {
 };
 
 
-const analyzeDocument = async (documentSource, model = "prebuilt-invoice") => {
+const analyzeDocument = async (documentSource, model = "prebuilt-layout") => {
   const client = documentIntelligenceClient();
   const poller = await client.beginAnalyzeDocument(model, documentSource);
 
-  const { documents } = await poller.pollUntilDone();
-  return documents;
+  const result = await poller.pollUntilDone();
+  
+  // Return standardized format based on model type
+  if (model === 'prebuilt-layout') {
+    // For layout model, return tables and key-value pairs
+    return {
+      tables: result.tables || [],
+      keyValuePairs: result.keyValuePairs || [],
+      pages: result.pages || [],
+      content: result.content || ''
+    };
+  } else if (model === 'prebuilt-invoice') {
+    return result.documents || [];
+  } else {
+    // For read model, return raw text
+    return result.pages || [];
+  }
 };
 
 module.exports = {

@@ -36,6 +36,8 @@ uploads/**/*
 !uploads/invoices/.gitkeep
 !uploads/records/
 !uploads/records/.gitkeep
+!uploads/ocr/
+!uploads/ocr/.gitkeep
 
 # Database dumps
 *.dump

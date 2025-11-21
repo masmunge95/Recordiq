@@ -9,6 +9,7 @@ const {
     sendInvoice
 } = require('../controllers/invoiceController');
 const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
+const { checkSubscription, requireLimit, trackUsage } = require('../middleware/subscriptionMiddleware');
 
 // Define authorized parties for Clerk middleware
 const authorizedParties = [
@@ -19,8 +20,11 @@ const authorizedParties = [
 // All routes in this file are protected
 router.use(ClerkExpressRequireAuth({ authorizedParties: authorizedParties }));
 
+// Apply subscription check to all routes
+router.use(checkSubscription);
+
 router.route('/')
-    .post(createInvoice)
+    .post(requireLimit('invoices'), trackUsage('invoices'), createInvoice)
     .get(getInvoices);
 
 router.route('/:id')

@@ -65,7 +65,7 @@ const ServiceForm = ({ onSave, onCancel, serviceToEdit }) => {
           />
         </div>
         <div>
-          <label className={`block mb-1 text-sm font-medium ${textColor}`}>Unit Price</label>
+          <label className={`block mb-1 text-sm font-medium ${textColor}`}>Unit Price (KSH)</label>
           <input
             type="number"
             step="0.01"
@@ -91,7 +91,7 @@ const ServiceForm = ({ onSave, onCancel, serviceToEdit }) => {
               <input
                 type="number"
                 step="0.01"
-                placeholder="Amount"
+                placeholder="Amount (KSH)"
                 value={fee.amount}
                 onChange={(e) => handleFeeChange(index, 'amount', parseFloat(e.target.value))}
                 className={`col-span-4 p-2 rounded border ${inputBg} ${focusRing}`}

@@ -5,27 +5,49 @@ const fs = require('fs');
 // Create the base uploads directory if it doesn't exist
 const uploadDir = path.join(__dirname, '..', '..', 'uploads');
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Create subdirectories for records and invoices
-const recordUploadDir = path.join(uploadDir, 'records');
-if (!fs.existsSync(recordUploadDir)) {
-  fs.mkdirSync(recordUploadDir);
-}
+// Create subdirectories for different upload types
+const createSubDirectories = () => {
+  const subDirs = [
+    path.join(uploadDir, 'records'),
+    path.join(uploadDir, 'invoices'),
+    path.join(uploadDir, 'ocr'),
+  ];
+  
+  subDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+};
 
-const invoiceUploadDir = path.join(uploadDir, 'invoices');
-if (!fs.existsSync(invoiceUploadDir)) {
-  fs.mkdirSync(invoiceUploadDir);
-}
+createSubDirectories();
+
+// Helper function to create user-specific OCR folders
+const ensureOcrUserFolder = (userId, documentType) => {
+  const userOcrDir = path.join(uploadDir, 'ocr', userId);
+  const typeDir = path.join(userOcrDir, documentType || 'general');
+  
+  if (!fs.existsSync(userOcrDir)) {
+    fs.mkdirSync(userOcrDir, { recursive: true });
+  }
+  
+  if (!fs.existsSync(typeDir)) {
+    fs.mkdirSync(typeDir, { recursive: true });
+  }
+  
+  return typeDir;
+};
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let dest;
     if (req.baseUrl.includes('/records')) {
-      dest = recordUploadDir;
+      dest = path.join(uploadDir, 'records');
     } else if (req.baseUrl.includes('/invoices')) {
-      dest = invoiceUploadDir;
+      dest = path.join(uploadDir, 'invoices');
     } else {
       dest = uploadDir;
     }
@@ -38,4 +60,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-module.exports = upload;
+module.exports = {
+  upload,
+  ensureOcrUserFolder,
+  uploadDir,
+};
