@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   // Determine proxy target based on environment
-  const proxyTarget = env.VITE_API_BASE_URL_DEV?.replace('/api', '') || 'http://localhost:5000';
+  const proxyTarget = env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
   
   return {
     base: '/',
