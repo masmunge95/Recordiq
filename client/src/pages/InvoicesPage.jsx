@@ -215,6 +215,47 @@ const InvoicesPage = () => {
     }
   }
 
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    document.title = 'Invoice-List';
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 100);
+  };
+
+  const handleDownloadCSV = () => {
+    // Prepare CSV headers
+    const headers = ['Invoice Number', 'Customer', 'Issue Date', 'Due Date', 'Total', 'Status'];
+    
+    // Prepare CSV rows
+    const rows = invoices.map(invoice => [
+      invoice.invoiceNumber || '',
+      invoice.customerName || '',
+      invoice.issueDate ? new Date(invoice.issueDate).toLocaleDateString() : new Date(invoice.createdAt).toLocaleDateString(),
+      invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : '',
+      `KSH ${(Number(invoice.total) || 0).toFixed(2)}`,
+      invoice.status || ''
+    ]);
+    
+    // Create CSV content
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoices-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const textColor = theme === 'dark' ? 'text-white' : 'text-gray-900';
   const secondaryTextColor = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
   const cardBg = theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
@@ -267,16 +308,38 @@ const InvoicesPage = () => {
               Create, track, and manage your invoices
             </p>
           </div>
-          {!showAddForm && (
-            <Button onClick={() => setShowAddForm(true)} variant="primary" className="whitespace-nowrap">
-              <span className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                Create Invoice
-              </span>
-            </Button>
-          )}
+          <div className="flex flex-wrap gap-3">
+            {!showAddForm && invoices.length > 0 && (
+              <>
+                <Button onClick={handlePrint} variant="secondary" size="md" className="print:hidden">
+                  <span className="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print
+                  </span>
+                </Button>
+                <Button onClick={handleDownloadCSV} variant="secondary" size="md" className="print:hidden">
+                  <span className="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                  </span>
+                </Button>
+              </>
+            )}
+            {!showAddForm && (
+              <Button onClick={() => setShowAddForm(true)} variant="primary" className="whitespace-nowrap">
+                <span className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                  Create Invoice
+                </span>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

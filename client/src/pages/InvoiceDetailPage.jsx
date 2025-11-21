@@ -141,6 +141,47 @@ const InvoiceDetailPage = () => {
     setShowPaymentForm(true);
   };
 
+  const handlePrint = () => {
+    // Set document title for print
+    const originalTitle = document.title;
+    document.title = `Invoice-${invoice.invoiceNumber}`;
+    
+    window.print();
+    
+    // Restore original title
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 100);
+  };
+
+  const handleDownloadPDF = () => {
+    // Set document title for PDF save
+    const originalTitle = document.title;
+    document.title = `Invoice-${invoice.invoiceNumber}`;
+    
+    // Create a printable version and trigger print dialog
+    // User can save as PDF from the print dialog
+    window.print();
+    
+    // Restore original title
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 100);
+  };
+
+  const handleDownloadJSON = () => {
+    const dataStr = JSON.stringify(invoice, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoice-${invoice.invoiceNumber}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const handlePaymentSubmit = async (paymentDetails) => {
     setPaymentLoading(true);
     try {
@@ -324,14 +365,12 @@ const InvoiceDetailPage = () => {
 
       {/* Payment Form Modal */}
       {showPaymentForm && (
-        <div className={`mb-6 p-6 rounded-xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
-          <PaymentForm
-            invoice={invoice}
-            onPayment={handlePaymentSubmit}
-            onCancel={() => setShowPaymentForm(false)}
-            loading={paymentLoading}
-          />
-        </div>
+        <PaymentForm
+          invoice={invoice}
+          onPayment={handlePaymentSubmit}
+          onCancel={() => setShowPaymentForm(false)}
+          loading={paymentLoading}
+        />
       )}
 
       {/* Edit Form */}
@@ -351,6 +390,9 @@ const InvoiceDetailPage = () => {
         </div>
       ) : (
         <div className={`p-8 rounded-2xl shadow-xl backdrop-blur-sm ${theme === 'dark' ? 'bg-gray-800/90 border border-gray-700/50' : 'bg-white/90 border border-gray-200/50'}`}>
+          {/* Print Title - Hidden on screen, visible in print */}
+          <title className="hidden print:block">Invoice #{invoice.invoiceNumber}</title>
+          
           {/* Header Section */}
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 pb-6 border-b border-gray-700/50 dark:border-gray-600/50">
             <div className="flex items-start gap-4">
@@ -419,47 +461,47 @@ const InvoiceDetailPage = () => {
 
             {/* Line Items Table */}
             {invoice.items && invoice.items.length > 0 && (
-              <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-700/30 border-gray-600/50' : 'bg-gray-50/50 border-gray-200/50'}`}>
-                <h3 className={`text-xl font-semibold ${textColor} mb-4 flex items-center gap-2`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className={`p-3 sm:p-6 rounded-xl border ${theme === 'dark' ? 'bg-gray-700/30 border-gray-600/50' : 'bg-gray-50/50 border-gray-200/50'}`}>
+                <h3 className={`text-base sm:text-xl font-semibold ${textColor} mb-3 sm:mb-4 flex items-center gap-2`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                   </svg>
                   Items Charged
                 </h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto -mx-3 sm:mx-0">
+                  <table className="w-full min-w-[500px] sm:min-w-0">
                     <thead>
                       <tr className={`border-b ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'}`}>
-                        <th className={`text-left py-3 px-4 ${secondaryTextColor} font-semibold`}>Description</th>
-                        <th className={`text-center py-3 px-4 ${secondaryTextColor} font-semibold`}>Quantity</th>
-                        <th className={`text-right py-3 px-4 ${secondaryTextColor} font-semibold`}>Unit Price</th>
-                        <th className={`text-right py-3 px-4 ${secondaryTextColor} font-semibold`}>Total</th>
+                        <th className={`text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm ${secondaryTextColor} font-semibold`}>Description</th>
+                        <th className={`text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm ${secondaryTextColor} font-semibold`}>Qty</th>
+                        <th className={`text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm ${secondaryTextColor} font-semibold`}>Unit Price</th>
+                        <th className={`text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm ${secondaryTextColor} font-semibold`}>Total</th>
                       </tr>
                     </thead>
                     <tbody>
                       {invoice.items.map((item, index) => (
                         <tr key={index} className={`border-b ${theme === 'dark' ? 'border-gray-700/50' : 'border-gray-200'}`}>
-                          <td className={`py-3 px-4 ${textColor}`}>{item.description}</td>
-                          <td className={`py-3 px-4 text-center ${textColor}`}>{item.quantity}</td>
-                          <td className={`py-3 px-4 text-right ${textColor}`}>KSH {(Number(item.unitPrice) || 0).toFixed(2)}</td>
-                          <td className={`py-3 px-4 text-right font-semibold ${textColor}`}>KSH {(Number(item.total) || 0).toFixed(2)}</td>
+                          <td className={`py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-base ${textColor}`}>{item.description}</td>
+                          <td className={`py-2 sm:py-3 px-2 sm:px-4 text-center text-xs sm:text-base ${textColor}`}>{item.quantity}</td>
+                          <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right text-xs sm:text-base ${textColor}`}>KSH {(Number(item.unitPrice) || 0).toFixed(2)}</td>
+                          <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-base ${textColor}`}>KSH {(Number(item.total) || 0).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr className={`border-t-2 ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'}`}>
-                        <td colSpan="3" className={`py-3 px-4 text-right font-semibold ${textColor}`}>Subtotal:</td>
-                        <td className={`py-3 px-4 text-right font-semibold ${textColor}`}>KSH {(Number(invoice.subTotal) || 0).toFixed(2)}</td>
+                        <td colSpan="3" className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-base ${textColor}`}>Subtotal:</td>
+                        <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right font-semibold text-xs sm:text-base ${textColor}`}>KSH {(Number(invoice.subTotal) || 0).toFixed(2)}</td>
                       </tr>
                       {invoice.tax > 0 && (
                         <tr>
-                          <td colSpan="3" className={`py-2 px-4 text-right ${secondaryTextColor}`}>Tax:</td>
-                          <td className={`py-2 px-4 text-right ${secondaryTextColor}`}>KSH {(Number(invoice.tax) || 0).toFixed(2)}</td>
+                          <td colSpan="3" className={`py-1.5 sm:py-2 px-2 sm:px-4 text-right text-xs sm:text-base ${secondaryTextColor}`}>Tax:</td>
+                          <td className={`py-1.5 sm:py-2 px-2 sm:px-4 text-right text-xs sm:text-base ${secondaryTextColor}`}>KSH {(Number(invoice.tax) || 0).toFixed(2)}</td>
                         </tr>
                       )}
                       <tr className={`border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'}`}>
-                        <td colSpan="3" className={`py-3 px-4 text-right text-xl font-bold ${textColor}`}>Total:</td>
-                        <td className={`py-3 px-4 text-right text-2xl font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>KSH {(Number(invoice.total) || 0).toFixed(2)}</td>
+                        <td colSpan="3" className={`py-2 sm:py-3 px-2 sm:px-4 text-right text-base sm:text-xl font-bold ${textColor}`}>Total:</td>
+                        <td className={`py-2 sm:py-3 px-2 sm:px-4 text-right text-lg sm:text-2xl font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>KSH {(Number(invoice.total) || 0).toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -484,7 +526,37 @@ const InvoiceDetailPage = () => {
           </div>
 
           {/* Actions Section */}
-          <div className="pt-8 flex flex-col sm:flex-row justify-end gap-4">
+          <div className="pt-8 flex flex-col sm:flex-row justify-between gap-4 print:hidden">
+            {/* Download/Print Actions */}
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={handlePrint} variant="secondary" size="md">
+                <span className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
+                  Print
+                </span>
+              </Button>
+              <Button onClick={handleDownloadPDF} variant="secondary" size="md">
+                <span className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Save PDF
+                </span>
+              </Button>
+              <Button onClick={handleDownloadJSON} variant="secondary" size="md">
+                <span className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  JSON
+                </span>
+              </Button>
+            </div>
+            
+            {/* Invoice Management Actions */}
+            <div className="flex flex-wrap gap-2 justify-end">
             {isInvoiceCreator && invoice.status === 'draft' && (
               <Button onClick={handleSendInvoice} disabled={sending} variant="secondary" size="lg">
                 <span className="flex items-center gap-2">
@@ -539,6 +611,7 @@ const InvoiceDetailPage = () => {
                 </span>
               </Button>
             )}
+            </div>
           </div>
         </div>
       )}

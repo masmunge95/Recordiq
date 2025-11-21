@@ -49,6 +49,54 @@ Recordiq contributes to the following UN SDGs:
 - **Customer Dashboard** - Track utility consumption, payment history, and pending invoices
 - **Recent Activity** - Quick access to recent invoices, payments, and meter readings
 
+## 📸 Screenshots
+
+### Application Interface
+
+<div align="center">
+
+#### Dashboard & Invoice Management
+![Seller Dashboard](screenshots/seller-dashboard.png)
+*Seller dashboard with real-time analytics, recent invoices, and top customers*
+
+![Invoice Management](screenshots/invoice-list.png)
+*Invoice list view with status tracking, filtering, and export options*
+
+![Invoice Detail](screenshots/invoice-detail.png)
+*Detailed invoice view with print, PDF export, and payment options*
+
+#### Customer Portal & Payments
+![Customer Dashboard](screenshots/customer-dashboard.png)
+*Customer portal showing pending invoices and payment history*
+
+![Payment Gateway](screenshots/payment-form.png)
+*Integrated IntaSend payment gateway for M-Pesa and card payments*
+
+#### Utility Services & OCR
+![Meter Reading](screenshots/meter-reading.png)
+*Meter reading records with OCR extraction and consumption tracking*
+
+![OCR Upload](screenshots/ocr-upload.png)
+*Azure AI-powered OCR for automatic data extraction from documents*
+
+![Customer Management](screenshots/customer-list.png)
+*Customer management with contact information and export capabilities*
+
+</div>
+
+### CI/CD Pipeline
+
+<div align="center">
+
+#### GitHub Actions Workflow
+![CI/CD Workflow Overview](screenshots/cicd-workflow-overview.png)
+*Automated deployment pipeline with build, test, and deploy stages*
+
+![CI/CD Job Details](screenshots/cicd-job-details.png)
+*Detailed job execution logs showing build steps and deployment status*
+
+</div>
+
 ## 🏗️ Architecture
 
 ### Frontend Stack
