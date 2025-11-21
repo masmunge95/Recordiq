@@ -354,7 +354,7 @@ const AddRecordForm = ({ onAddRecord, onCancel, initialData = {} }) => {
         <button type="button" onClick={onCancel} className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
           Cancel
         </button>
-        <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+        <button type="submit" className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
           Add Record
         </button>
       </div>
